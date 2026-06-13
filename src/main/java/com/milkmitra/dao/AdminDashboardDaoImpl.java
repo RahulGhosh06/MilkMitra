@@ -116,12 +116,12 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 	            String milkType =
 	                    rs.getString("milkType");
 
-	            if("Cow".equalsIgnoreCase(milkType))
+	            if("c".equalsIgnoreCase(milkType))
 	            {
 	                dashboard.setTodayCowLtr(
 	                        rs.getDouble("qty"));
 	            }
-	            else if("Buffalo".equalsIgnoreCase(milkType))
+	            else if("B".equalsIgnoreCase(milkType))
 	            {
 	                dashboard.setTodayBufLtr(
 	                        rs.getDouble("qty"));

@@ -20,8 +20,8 @@ public class DBConnection {
 
             // Fallback to localhost for local development
             if (dbUrl  == null) dbUrl  = "jdbc:mysql://localhost:3306/milkmitra?useSSL=false&allowPublicKeyRetrieval=true";
-            if (dbUser == null) dbUser = "root";
-            if (dbPass == null) dbPass = "password";
+            if (dbUser == null) dbUser = "rahulghosh";
+            if (dbPass == null) dbPass = "20040106@Rg";
 
             cn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 

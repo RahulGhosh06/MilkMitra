@@ -27,7 +27,14 @@ public class AdminDashboardServlet extends HttpServlet
         HttpSession session = request.getSession();
 
         IAdminDashboardDao dao = null;
-
+        String view = request.getParameter("view");
+        if (view == null) view = "dashboard";
+        if ("farmerList".equals(view)) {
+            response.sendRedirect("FarmerListServlet?view=farmerList");
+            return;
+        }
+        request.setAttribute("currentView", view);
+        
         try
         {
             dao = new AdminDashboardDaoImpl();

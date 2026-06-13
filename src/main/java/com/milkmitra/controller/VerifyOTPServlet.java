@@ -92,7 +92,7 @@ public class VerifyOTPServlet extends HttpServlet
 	        if("ADMIN".equals(user.getRoleName()))
 	        {
 	            response.sendRedirect(
-	                    "AdminDashboard.jsp");
+	                    "AdminDashboardServlet");
 	        }
 	        else if("FARMER".equals(user.getRoleName()))
 	        {

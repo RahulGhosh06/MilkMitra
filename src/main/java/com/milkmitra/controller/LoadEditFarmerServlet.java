@@ -36,8 +36,14 @@ public class LoadEditFarmerServlet extends HttpServlet
             {
                 request.setAttribute("farmer", farmer);
 
-                request.getRequestDispatcher("UpdateFarmer.jsp")
-                       .forward(request, response);
+                request.setAttribute(
+                    "currentView",
+                    "editFarmer"
+                );
+
+                request.getRequestDispatcher(
+                    "AdminDashboard.jsp"
+                ).forward(request, response);
             }
             else
             {

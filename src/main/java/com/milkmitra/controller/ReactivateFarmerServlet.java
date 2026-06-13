@@ -44,12 +44,14 @@ public class ReactivateFarmerServlet extends HttpServlet {
                     ". Farmer may already be active.");
             }
 
-            response.sendRedirect("FarmerListServlet");
+            response.sendRedirect(
+            	    "FarmerListServlet?view=farmerList"
+            	);
 
         } catch(Exception e) {
             e.printStackTrace();
             session.setAttribute("errorMsg", e.getMessage());
-            response.sendRedirect("FarmerListServlet");
+            response.sendRedirect("FarmerListServlet?view=farmerList");
 
         } finally {
             if(dao != null) {

@@ -785,7 +785,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
         <a href="MilkCollection.jsp" class="sn-item">
             <i class="ti ti-plus"></i>New Entry
         </a>
-        <a href="AdminDashboard.jsp" class="sn-item">
+        <a href="AdminDashboardServlet" class="sn-item">
             <i class="ti ti-home"></i>Dashboard
         </a>
     </nav>

@@ -12,8 +12,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.milkmitra.dao.AdminDashboardDaoImpl;
 import com.milkmitra.dao.FarmerDaoImpl;
+import com.milkmitra.dao.IAdminDashboardDao;
 import com.milkmitra.dao.IFarmerDao;
+import com.milkmitra.model.Dashboard;
 import com.milkmitra.model.Farmer;
 
 /**
@@ -21,90 +24,57 @@ import com.milkmitra.model.Farmer;
  */
 @WebServlet("/FarmerListServlet")
 public class FarmerListServlet extends HttpServlet {
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("FarmerListServlet Servlet Called");
-    	response.setContentType("text/html");
-    	
-    	HttpSession session   = request.getSession();
-        String successMsg     = (String) session.getAttribute("successMsg");
-        String errorMsg       = (String) session.getAttribute("errorMsg");
-        session.removeAttribute("successMsg");
-        session.removeAttribute("errorMsg");
-        if(successMsg != null) request.setAttribute("successMsg", successMsg);
-        if(errorMsg   != null) request.setAttribute("errorMsg",   errorMsg);
-    	
-    	IFarmerDao dao = null;
-    	
-    	try
-    	{
-    		
-    		dao = new FarmerDaoImpl();
-    		
-    		List<Farmer> farmers = dao.getAllFarmers();
-    		
-    		int activeCount = 0;
-    		int inactiveCount = 0;
-    		int joinedThisMonth = 0;
-
-    		LocalDate today = LocalDate.now();
-
-    		for(Farmer farmer : farmers)
-    		{
-    			if(farmer.isActive())
-    			{
-    			    activeCount++;
-    			}
-    			else
-    			{
-    			    inactiveCount++;
-    			}
-
-    		    LocalDate joiningDate = farmer.getJoiningDate();
-
-    		    if(joiningDate != null
-    		            && joiningDate.getMonth() == today.getMonth()
-    		            && joiningDate.getYear() == today.getYear())
-    		    {
-    		        joinedThisMonth++;
-    		    }
-    		}
-
-    		request.setAttribute("farmers", farmers);
-    		request.setAttribute("activeCount", activeCount);
-    		request.setAttribute("inactiveCount", inactiveCount);
-    		request.setAttribute("joinedThisMonth", joinedThisMonth);
-
-    		request.getRequestDispatcher("FarmerList.jsp")
-    		       .forward(request, response);
-    		
-    	}
-    	
-    	catch(Exception e)
-	    {
-	        e.printStackTrace();
-	        request.setAttribute("errorMsg", e.getMessage());
-
-	        request.getRequestDispatcher("FarmerList.jsp").forward(request, response);
-	        return;
-	    }
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         
-	    finally // ← ALWAYS runs, success or failure
-	    {
-	        if(dao != null)
-	        {
-	            try
-	            {
-	            	((FarmerDaoImpl) dao).cleanUp(); 
-	            }
-	                
-	            catch(SQLException e) 
-	            { 
-	               e.printStackTrace(); 
-	            }
-	         }
-	            
-	     }
-	}
-
+        HttpSession session = request.getSession();
+        IFarmerDao farmerDao = null;
+        IAdminDashboardDao dashDao = null;
+        
+        try {
+            farmerDao = new FarmerDaoImpl();
+            dashDao = new AdminDashboardDaoImpl();
+            
+            List<Farmer> farmers = farmerDao.getAllFarmers();
+            Dashboard dashboard = dashDao.getDashboardData();
+            
+            // Count stats
+            int activeCount = 0, inactiveCount = 0, joinedThisMonth = 0;
+            java.time.LocalDate now = java.time.LocalDate.now();
+            for(Farmer f : farmers) {
+                if(f.isActive()) activeCount++;
+                else inactiveCount++;
+                if(f.getJoiningDate() != null &&
+                   f.getJoiningDate().getMonth() == now.getMonth() &&
+                   f.getJoiningDate().getYear() == now.getYear()) {
+                    joinedThisMonth++;
+                }
+            }
+            
+            request.setAttribute("farmers", farmers);
+            request.setAttribute("dashboard", dashboard);
+            request.setAttribute("activeCount", activeCount);
+            request.setAttribute("inactiveCount", inactiveCount);
+            request.setAttribute("joinedThisMonth", joinedThisMonth);
+            request.setAttribute("currentView", "farmerList");
+            
+            request.getRequestDispatcher("AdminDashboard.jsp")
+                   .forward(request, response);
+            
+        } catch(Exception e) {
+            e.printStackTrace();
+            session.setAttribute("errorMsg", e.getMessage());
+            response.sendRedirect("AdminDashboardServlet?view=dashboard");
+            
+        } finally {
+            if(farmerDao != null) {
+                try { ((FarmerDaoImpl) farmerDao).cleanUp(); }
+                catch(SQLException e) { e.printStackTrace(); }
+            }
+            if(dashDao != null) {
+                try { ((AdminDashboardDaoImpl) dashDao).cleanUp(); }
+                catch(SQLException e) { e.printStackTrace(); }
+            }
+        }
+    }
 }

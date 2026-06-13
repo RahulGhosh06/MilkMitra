@@ -13,7 +13,8 @@
         response.sendRedirect("Login.jsp");
         return;
     }
-
+    
+    Farmer selectedFarmer = (Farmer)request.getAttribute("selectedFarmer");
     List<Farmer> farmers = (List<Farmer>) request.getAttribute("farmers");
     String errorMsg      = (String) request.getAttribute("errorMsg");
     String successMsg    = (String) request.getAttribute("successMsg");
@@ -361,11 +362,10 @@ td{padding:11px 16px;font-size:13px;}
                         <td>
                             <div class="action-wrap">
 
-                                <!-- View — always shown -->
-                                <a href="ViewFarmerServlet?farmerCode=<%= f.getFarmerCode() %>"
-                                   class="vbtn vbtn-view">
-                                    <i class="ti ti-eye"></i>View
-                                </a>
+                                <a href="FarmerListServlet?farmerCode=<%= f.getFarmerCode() %>"
+   									class="vbtn vbtn-view">
+    								<i class="ti ti-eye"></i>View
+								</a>
 
                                 <!-- Deactivate — only for ACTIVE farmers -->
                                 <% if(f.isActive()) { %>
@@ -384,6 +384,11 @@ td{padding:11px 16px;font-size:13px;}
                                     <i class="ti ti-user-check"></i>Reactivate
                                 </a>
                                 <% } %>
+                                
+                                <a href="LoadEditFarmerServlet?farmerCode=<%= f.getFarmerCode() %>"
+   										class="vbtn">
+   									Edit
+								</a>
 
                             </div>
                         </td>
@@ -414,6 +419,67 @@ td{padding:11px 16px;font-size:13px;}
                 </div>
             </div>
         </div>
+        
+        <% if(selectedFarmer != null) { %>
+
+<div class="tw" style="margin-top:20px;">
+
+    <div class="tw-head">
+        <h3>Farmer Profile</h3>
+    </div>
+
+    <div style="padding:20px;line-height:2;">
+
+        <p>
+            <strong>Farmer Code:</strong>
+            <%= selectedFarmer.getFarmerCode() %>
+        </p>
+
+        <p>
+            <strong>Name:</strong>
+            <%= selectedFarmer.getFarmerName() %>
+        </p>
+
+        <p>
+            <strong>Mobile:</strong>
+            <%= selectedFarmer.getMobile() %>
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            <%= selectedFarmer.getEmail() %>
+        </p>
+
+        <p>
+            <strong>Address:</strong>
+            <%= selectedFarmer.getAddress() %>
+        </p>
+
+        <p>
+            <strong>Bank Name:</strong>
+            <%= selectedFarmer.getBankName() %>
+        </p>
+
+        <p>
+            <strong>Account Holder:</strong>
+            <%= selectedFarmer.getAccountHolderName() %>
+        </p>
+
+        <p>
+            <strong>Account No:</strong>
+            <%= selectedFarmer.getAccountNo() %>
+        </p>
+
+        <p>
+            <strong>IFSC:</strong>
+            <%= selectedFarmer.getIfscCode() %>
+        </p>
+
+    </div>
+
+</div>
+
+<% } %>
 
     </div><!-- /content -->
 
