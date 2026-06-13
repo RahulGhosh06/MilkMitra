@@ -1,24 +1,16 @@
 package com.milkmitra.utils;
 
-import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import com.sendgrid.*;
+import com.sendgrid.helpers.mail.*;
+import com.sendgrid.helpers.mail.objects.*;
 
 public class EmailUtil {
 
-    // Read from environment variables
-    private static final String FROM_EMAIL    = System.getenv("MAIL_EMAIL")    != null
-                                                ? System.getenv("MAIL_EMAIL")
-                                                : "rahulghosh.med.2004@gmail.com"; // fallback for local
+    private static final String FROM_EMAIL   = System.getenv("MAIL_EMAIL") != null
+                                               ? System.getenv("MAIL_EMAIL")
+                                               : "rahulghosh.med.2004@gmail.com";
 
-    private static final String APP_PASSWORD  = System.getenv("MAIL_PASSWORD") != null
-                                                ? System.getenv("MAIL_PASSWORD")
-                                                : "nwqkheoorzlxbtsh";                              // fallback for local
+    private static final String SENDGRID_KEY = System.getenv("SENDGRID_API_KEY");
 
     public static void sendEmail(
             String toEmail,
@@ -26,36 +18,19 @@ public class EmailUtil {
             String messageText)
             throws Exception {
 
-    	Properties props = new Properties();
-    	props.put("mail.smtp.host", "smtp.gmail.com");
-    	props.put("mail.smtp.port", "465");
-    	props.put("mail.smtp.auth", "true");
-    	props.put("mail.smtp.socketFactory.port", "465");
-    	props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
-    	props.put("mail.smtp.socketFactory.fallback", "false");
+        Email from      = new Email(FROM_EMAIL);
+        Email to        = new Email(toEmail);
+        Content content = new Content("text/plain", messageText);
+        Mail mail       = new Mail(from, subject, to, content);
 
-        Session session = Session.getInstance(
-                props,
-                new Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(
-                                FROM_EMAIL,
-                                APP_PASSWORD
-                        );
-                    }
-                });
+        SendGrid sg     = new SendGrid(SENDGRID_KEY);
+        Request request = new Request();
 
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(FROM_EMAIL));
-        message.setRecipients(
-                Message.RecipientType.TO,
-                InternetAddress.parse(toEmail)
-        );
-        message.setSubject(subject);
-        message.setText(messageText);
+        request.setMethod(Method.POST);
+        request.setEndpoint("mail/send");
+        request.setBody(mail.build());
 
-        Transport.send(message);
-        System.out.println("Email Sent Successfully");
+        Response response = sg.api(request);
+        System.out.println("Email Status: " + response.getStatusCode());
     }
 }

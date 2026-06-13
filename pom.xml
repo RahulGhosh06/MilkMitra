@@ -60,6 +60,13 @@
             <artifactId>javax.activation</artifactId>
             <version>1.2.0</version>
         </dependency>
+        
+        <!-- SendGrid -->
+		<dependency>
+    		<groupId>com.sendgrid</groupId>
+    		<artifactId>sendgrid-java</artifactId>
+    		<version>4.9.3</version>
+		</dependency>
 
     </dependencies>
 
