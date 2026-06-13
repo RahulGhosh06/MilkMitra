@@ -18,7 +18,7 @@ public class EmailUtil {
 
     private static final String APP_PASSWORD  = System.getenv("MAIL_PASSWORD") != null
                                                 ? System.getenv("MAIL_PASSWORD")
-                                                : "";                              // fallback for local
+                                                : "nwqkheoorzlxbtsh";                              // fallback for local
 
     public static void sendEmail(
             String toEmail,
@@ -26,12 +26,13 @@ public class EmailUtil {
             String messageText)
             throws Exception {
 
-        Properties props = new Properties();
-        props.put("mail.smtp.host",           "smtp.gmail.com");
-        props.put("mail.smtp.port",           "587");
-        props.put("mail.smtp.auth",           "true");
-        props.put("mail.smtp.starttls.enable","true");
-        // props.put("mail.debug", "true");
+    	Properties props = new Properties();
+    	props.put("mail.smtp.host", "smtp.gmail.com");
+    	props.put("mail.smtp.port", "465");
+    	props.put("mail.smtp.auth", "true");
+    	props.put("mail.smtp.socketFactory.port", "465");
+    	props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
+    	props.put("mail.smtp.socketFactory.fallback", "false");
 
         Session session = Session.getInstance(
                 props,
