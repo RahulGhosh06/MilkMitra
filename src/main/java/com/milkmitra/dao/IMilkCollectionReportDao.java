@@ -7,7 +7,7 @@ import java.util.List;
 import com.milkmitra.model.Collection;
 import com.milkmitra.model.Report;
 
-public interface ImilkcollectionReportDao
+public interface IMilkCollectionReportDao
 {
 	//1. Today's Collection Report
 	List<Collection> getTodayCollections() throws SQLException;

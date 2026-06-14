@@ -12,9 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.milkmitra.dao.milkcollectionReportDaoImpl;
-import com.milkmitra.dao.ImilkcollectionReportDao;
-import com.milkmitra.dao.milkcollectionDaoImpl;
+import com.milkmitra.dao.IMilkCollectionReportDao;
+import com.milkmitra.dao.MilkCollectionReportDaoImpl;
 import com.milkmitra.model.Report;
 
 /**
@@ -31,10 +30,10 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     	String fromDate = request.getParameter("fromDate");
     	String toDate = request.getParameter("toDate");
     	
-    	ImilkcollectionReportDao dao = null;
+    	IMilkCollectionReportDao dao = null;
     	try
     	{
-    		dao = new milkcollectionReportDaoImpl();
+    		dao = new MilkCollectionReportDaoImpl();
     		
     		List<Report> reports =
     		        dao.getDateWiseCollectionReport(
@@ -61,7 +60,7 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     		        "datewise");
 
     		request.getRequestDispatcher(
-    		        "milkcollectionReport.jsp")
+    		        "milkCollectionReport.jsp")
     		       .forward(request, response);
 
     		return;
@@ -86,7 +85,7 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     	    {
     	        try
     	        {
-    	            ((milkcollectionReportDaoImpl)dao).cleanUp();
+    	            ((MilkCollectionReportDaoImpl)dao).cleanUp();
     	        }
     	        catch(SQLException e)
     	        {

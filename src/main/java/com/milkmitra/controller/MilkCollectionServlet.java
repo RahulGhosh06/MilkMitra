@@ -14,8 +14,8 @@ import javax.servlet.http.HttpSession;
 
 import com.milkmitra.dao.FarmerDaoImpl;
 import com.milkmitra.dao.IFarmerDao;
-import com.milkmitra.dao.ImilkcollectionDao;
-import com.milkmitra.dao.milkcollectionDaoImpl;
+import com.milkmitra.dao.IMilkCollectionDao;
+import com.milkmitra.dao.MilkCollectionDaoImpl;
 import com.milkmitra.model.Collection;
 import com.milkmitra.model.Farmer;
 
@@ -23,7 +23,7 @@ import com.milkmitra.model.Farmer;
  * Servlet implementation class milkcollectionServlet
  */
 @WebServlet("/milkcollectionServlet")
-public class milkcollectionServlet extends HttpServlet {
+public class MilkCollectionServlet extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("milkcollectionServlet Called");
@@ -116,10 +116,10 @@ public class milkcollectionServlet extends HttpServlet {
     	    shift = "EVENING";
     	}
     	
-    	ImilkcollectionDao dao = null;
+    	IMilkCollectionDao dao = null;
     	IFarmerDao farmerDao = null;
     	try {
-    		dao = new milkcollectionDaoImpl();
+    		dao = new MilkCollectionDaoImpl();
     		
     		farmerDao = new FarmerDaoImpl();
 
@@ -232,7 +232,7 @@ public class milkcollectionServlet extends HttpServlet {
     	    {
     	        try
     	        {
-    	            ((milkcollectionDaoImpl)dao).cleanUp();
+    	            ((MilkCollectionDaoImpl)dao).cleanUp();
     	        }
     	        catch(SQLException e)
     	        {

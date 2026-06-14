@@ -11,9 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
-import com.milkmitra.dao.ImilkcollectionReportDao;
-import com.milkmitra.dao.milkcollectionReportDaoImpl;
+import com.milkmitra.dao.IMilkCollectionReportDao;
+import com.milkmitra.dao.MilkCollectionReportDaoImpl;
 import com.milkmitra.model.Collection;
 
 /**
@@ -21,7 +20,7 @@ import com.milkmitra.model.Collection;
  */
 // This Servlet Is for Today's Collection Report
 @WebServlet("/milkcollectionReportServlet")
-public class milkcollectionReportServlet extends HttpServlet {
+public class MilkCollectionReportServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("Milk Collection Report Servlet Called");
@@ -30,11 +29,11 @@ public class milkcollectionReportServlet extends HttpServlet {
     	
 
     	
-    	ImilkcollectionReportDao dao = null;
+    	IMilkCollectionReportDao dao = null;
     	
     	try
     	{
-    		dao = new milkcollectionReportDaoImpl();
+    		dao = new MilkCollectionReportDaoImpl();
     		
     		List<Collection> collections =
     		        dao.getTodayCollections();
@@ -68,7 +67,7 @@ public class milkcollectionReportServlet extends HttpServlet {
     	    {
     	        try
     	        {
-    	            ((milkcollectionReportDaoImpl)dao).cleanUp();
+    	            ((MilkCollectionReportDaoImpl)dao).cleanUp();
     	        }
     	        catch(SQLException e)
     	        {

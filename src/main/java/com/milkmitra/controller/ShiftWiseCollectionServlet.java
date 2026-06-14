@@ -8,8 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-import com.milkmitra.dao.ImilkcollectionReportDao;
-import com.milkmitra.dao.milkcollectionReportDaoImpl;
+import com.milkmitra.dao.IMilkCollectionReportDao;
+import com.milkmitra.dao.MilkCollectionReportDaoImpl;
 import com.milkmitra.model.Collection;
 
 @WebServlet("/ShiftWiseCollectionServlet")
@@ -23,7 +23,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
 
         String shift = request.getParameter("shift");
 
-        ImilkcollectionReportDao dao = null;
+        IMilkCollectionReportDao dao = null;
 
         try
         {
@@ -36,7 +36,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
                 return;
             }
 
-            dao = new milkcollectionReportDaoImpl();
+            dao = new MilkCollectionReportDaoImpl();
 
             List<Collection> collections =
                     dao.getCollectionsByShift(shift);
@@ -70,7 +70,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
             {
                 try
                 {
-                    ((milkcollectionReportDaoImpl)dao).cleanUp();
+                    ((MilkCollectionReportDaoImpl)dao).cleanUp();
                 }
                 catch(SQLException e)
                 {

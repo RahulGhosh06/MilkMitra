@@ -13,12 +13,12 @@ import com.milkmitra.model.Collection;
 import com.milkmitra.model.Report;
 import com.milkmitra.utils.DBConnection;
 
-public class milkcollectionReportDaoImpl implements ImilkcollectionReportDao
+public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 {
 	private Connection cn;
 	private PreparedStatement pst1, pst2, pst3, pst4;
 	
-	public milkcollectionReportDaoImpl() throws ClassNotFoundException, Exception
+	public MilkCollectionReportDaoImpl() throws ClassNotFoundException, Exception
 	{
 		cn = DBConnection.openConnection();
 		

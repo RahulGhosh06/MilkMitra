@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.milkmitra.dao.ImilkcollectionReportDao;
-import com.milkmitra.dao.milkcollectionReportDaoImpl;
+import com.milkmitra.dao.IMilkCollectionReportDao;
+import com.milkmitra.dao.MilkCollectionReportDaoImpl;
 import com.milkmitra.model.Collection;
 
 /**
@@ -31,10 +31,10 @@ public class FarmerCollectionDetailServlet extends HttpServlet {
     	String fromDate = request.getParameter("fromDate");
     	String toDate = request.getParameter("toDate");
     	
-    	ImilkcollectionReportDao dao = null;
+    	IMilkCollectionReportDao dao = null;
     	try
     	{
-    		dao = new milkcollectionReportDaoImpl();
+    		dao = new MilkCollectionReportDaoImpl();
     		
     		List<Collection> collections =
                     dao.getFarmerCollections(
@@ -81,7 +81,7 @@ public class FarmerCollectionDetailServlet extends HttpServlet {
     	    {
     	        try
     	        {
-    	            ((milkcollectionReportDaoImpl)dao).cleanUp();
+    	            ((MilkCollectionReportDaoImpl)dao).cleanUp();
     	        }
     	        catch(SQLException e)
     	        {
