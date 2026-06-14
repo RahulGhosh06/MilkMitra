@@ -113,7 +113,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="alert alert-error"><i class="ti ti-alert-circle"></i><%= errorMsg %></div>
     <% } %>
 
-    <form action="milkcollectionServlet" method="post">
+    <form action="MilkCollectionServlet" method="post">
         <div class="form-card">
 
             <!-- Farmer details -->

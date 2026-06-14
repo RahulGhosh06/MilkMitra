@@ -60,7 +60,7 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     		        "datewise");
 
     		request.getRequestDispatcher(
-    		        "milkCollectionReport.jsp")
+    		        "MilkCollectionReport.jsp")
     		       .forward(request, response);
 
     		return;
@@ -76,7 +76,7 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     	        "System Error : " + e.getMessage()
     	    );
 
-    	    response.sendRedirect("milkcollectionReport.jsp");
+    	    response.sendRedirect("MilkCollectionReport.jsp");
     	    return;
     	}
     	finally
