@@ -13,6 +13,8 @@ import javax.servlet.http.HttpSession;
 
 import com.milkmitra.dao.FarmerDaoImpl;
 import com.milkmitra.dao.IFarmerDao;
+import com.milkmitra.dao.IUserDao;
+import com.milkmitra.dao.UserDaoImpl;
 import com.milkmitra.model.Farmer;
 
 /**
@@ -43,6 +45,7 @@ public class AddFarmerServlet extends HttpServlet {
     	//boolean isActi
     	
     	IFarmerDao dao = null;
+    	IUserDao userDao = null;
     	
     	try {
     		
@@ -67,6 +70,18 @@ public class AddFarmerServlet extends HttpServlet {
     		
     		if(farmerCode != null)
     		{
+    			userDao = new UserDaoImpl();
+    			
+    			System.out.println("Mobile = " + farmer.getMobile());
+    			System.out.println("Farmer Code = " + farmer.getFarmerCode());
+    			System.out.println("Email = " + farmer.getEmail());
+    			
+    			userDao.createFarmerLogin(
+    			        farmer.getMobile(),
+    			        farmer.getFarmerCode(),
+    			        farmer.getEmail()
+    			);
+    			
     			session.setAttribute(
     			    "successMsg",
     			    "Farmer Added Successfully. Code : " + farmerCode

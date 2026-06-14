@@ -95,6 +95,8 @@ public class FarmerDaoImpl implements IFarmerDao
 		        
 		        String farmerCode = String.format("F%03d", farmerId);
 		        
+		        farmer.setFarmerCode(farmerCode);
+		        
 		        pst2.setString(1, farmerCode);
 		        pst2.setInt(2, farmerId);
 

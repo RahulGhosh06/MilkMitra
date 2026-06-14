@@ -7,7 +7,10 @@ import com.milkmitra.model.User;
 public interface IUserDao
 {
 	User authenticate(String username, String password) throws SQLException; //for authentications
-	void cleanUp() 	throws SQLException;
 	
+	//Creting Farmer In users Table For Login Purpose
+	void createFarmerLogin(String mobile, String farmerCode, String email) throws SQLException;
+
+	void cleanUp() throws SQLException;
 	
 }

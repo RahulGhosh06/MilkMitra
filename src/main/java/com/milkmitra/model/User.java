@@ -9,6 +9,7 @@ public class User
     private int roleId;
     private String roleName;
     private String email;
+    private String farmerCode;
 
     public User()
     {
@@ -81,6 +82,14 @@ public class User
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getFarmerCode() {
+		return farmerCode;
+	}
+
+	public void setFarmerCode(String farmerCode) {
+		this.farmerCode = farmerCode;
 	}
     
 }

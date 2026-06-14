@@ -49,6 +49,28 @@ public class LoginServlet extends HttpServlet
 	            	
 	            if(user != null)
 	            {
+	            	if("FARMER".equalsIgnoreCase(user.getRoleName()))
+	            	{
+	            	    HttpSession session =
+	            	            request.getSession();
+
+	            	    session.setAttribute(
+	            	            "username",
+	            	            user.getUsername());
+
+	            	    session.setAttribute(
+	            	            "farmerCode",
+	            	            user.getFarmerCode());
+
+	            	    session.setAttribute(
+	            	            "role",
+	            	            "FARMER");
+
+	            	    response.sendRedirect(
+	            	            "FarmerDashboardServlet");
+
+	            	    return;
+	            	}
 	                HttpSession session =
 	                        request.getSession();
 
