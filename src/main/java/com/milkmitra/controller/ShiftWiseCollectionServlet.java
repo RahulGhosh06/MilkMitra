@@ -31,7 +31,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
             if(shift == null || shift.trim().isEmpty())
             {
                 request.getRequestDispatcher(
-                        "milkcollectionReport.jsp")
+                        "MilkCollectionReport.jsp")
                        .forward(request, response);
                 return;
             }
@@ -50,7 +50,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
                     shift);
 
             request.getRequestDispatcher(
-                    "milkcollectionReport.jsp")
+                    "MilkCollectionReport.jsp")
                    .forward(request, response);
         }
         catch(Exception e)
@@ -62,7 +62,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
                     "System Error : " + e.getMessage());
 
             response.sendRedirect(
-                    "milkcollectionReportServlet");
+                    "MilkCollectionReportServlet");
         }
         finally
         {

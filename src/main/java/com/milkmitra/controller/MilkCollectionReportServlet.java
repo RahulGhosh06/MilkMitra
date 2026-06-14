@@ -19,7 +19,7 @@ import com.milkmitra.model.Collection;
  * Servlet implementation class MilkColelctionReportServlet
  */
 // This Servlet Is for Today's Collection Report
-@WebServlet("/milkcollectionReportServlet")
+@WebServlet("/MilkCollectionReportServlet")
 public class MilkCollectionReportServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -43,7 +43,7 @@ public class MilkCollectionReportServlet extends HttpServlet {
     		        collections);
 
     		request.getRequestDispatcher(
-    		        "milkcollectionReport.jsp")
+    		        "MilkCollectionReport.jsp")
     		       .forward(request,response);
     		
     		return;
@@ -58,7 +58,7 @@ public class MilkCollectionReportServlet extends HttpServlet {
     	        "System Error : " + e.getMessage()
     	    );
 
-    	    response.sendRedirect("milkcollectionReport.jsp");
+    	    response.sendRedirect("MilkCollectionReport.jsp");
     	    return;
     	}
     	finally

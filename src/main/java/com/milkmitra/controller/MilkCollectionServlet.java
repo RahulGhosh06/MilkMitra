@@ -22,7 +22,7 @@ import com.milkmitra.model.Farmer;
 /**
  * Servlet implementation class milkcollectionServlet
  */
-@WebServlet("/milkcollectionServlet")
+@WebServlet("/MilkCollectionServlet")
 public class MilkCollectionServlet extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -43,7 +43,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	    );
 
     	    response.sendRedirect(
-    	        "milkcollection.jsp"
+    	        "MilkCollection.jsp"
     	    );
     	    return;
     	}
@@ -61,7 +61,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	        "Quantity must be greater than zero."
     	    );
 
-    	    response.sendRedirect("milkcollection.jsp");
+    	    response.sendRedirect("MilkCollection.jsp");
     	    return;
     	}
     	
@@ -79,7 +79,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	            "Buffalo milk requires minimum SNF 8.3"
     	        );
 
-    	        response.sendRedirect("milkcollection.jsp");
+    	        response.sendRedirect("MilkCollection.jsp");
     	        return;
     	    }
     	    else
@@ -98,7 +98,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	            "Cow milk requires minimum Fat 3.0 and SNF 8.0"
     	        );
 
-    	        response.sendRedirect("milkcollection.jsp");
+    	        response.sendRedirect("MilkCollection.jsp");
     	        return;
     	    }
     	    else
@@ -132,7 +132,7 @@ public class MilkCollectionServlet extends HttpServlet {
     		        "Farmer Code does not exist."
     		    );
 
-    		    response.sendRedirect("milkcollection.jsp");
+    		    response.sendRedirect("MilkCollection.jsp");
     		    return;
     		}
 
@@ -143,7 +143,7 @@ public class MilkCollectionServlet extends HttpServlet {
     		        "This farmer is inactive and cannot give milk."
     		    );
 
-    		    response.sendRedirect("milkcollection.jsp");
+    		    response.sendRedirect("MilkCollection.jsp");
     		    return;
     		}
     		
@@ -169,7 +169,7 @@ public class MilkCollectionServlet extends HttpServlet {
     		        status
     		    );
 
-    		    response.sendRedirect("milkcollection.jsp");
+    		    response.sendRedirect("MilkCollection.jsp");
     		    return;
     		}
     		else
@@ -179,7 +179,7 @@ public class MilkCollectionServlet extends HttpServlet {
     		        "Unable to save collection."
     		    );
 
-    		    response.sendRedirect("milkcollection.jsp");
+    		    response.sendRedirect("MilkCollection.jsp");
     		    return;
     		}
     	}
@@ -211,7 +211,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	        );
     	    }
 
-    	    response.sendRedirect("milkcollection.jsp");
+    	    response.sendRedirect("MilkCollection.jsp");
     	    return;
     	}
     	catch(Exception e)
@@ -223,7 +223,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	        "System Error : " + e.getMessage()
     	    );
 
-    	    response.sendRedirect("milkcollection.jsp");
+    	    response.sendRedirect("MilkCollection.jsp");
     	    return;
     	}
     	finally
