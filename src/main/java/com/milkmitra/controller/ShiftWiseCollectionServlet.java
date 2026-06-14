@@ -8,8 +8,8 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 
-import com.milkmitra.dao.IMilkCollectionReportDao;
-import com.milkmitra.dao.MilkCollectionReportDaoImpl;
+import com.milkmitra.dao.ImilkcollectionReportDao;
+import com.milkmitra.dao.milkcollectionReportDaoImpl;
 import com.milkmitra.model.Collection;
 
 @WebServlet("/ShiftWiseCollectionServlet")
@@ -23,7 +23,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
 
         String shift = request.getParameter("shift");
 
-        IMilkCollectionReportDao dao = null;
+        ImilkcollectionReportDao dao = null;
 
         try
         {
@@ -31,12 +31,12 @@ public class ShiftWiseCollectionServlet extends HttpServlet
             if(shift == null || shift.trim().isEmpty())
             {
                 request.getRequestDispatcher(
-                        "MilkCollectionReport.jsp")
+                        "milkcollectionReport.jsp")
                        .forward(request, response);
                 return;
             }
 
-            dao = new MilkCollectionReportDaoImpl();
+            dao = new milkcollectionReportDaoImpl();
 
             List<Collection> collections =
                     dao.getCollectionsByShift(shift);
@@ -50,7 +50,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
                     shift);
 
             request.getRequestDispatcher(
-                    "MilkCollectionReport.jsp")
+                    "milkcollectionReport.jsp")
                    .forward(request, response);
         }
         catch(Exception e)
@@ -62,7 +62,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
                     "System Error : " + e.getMessage());
 
             response.sendRedirect(
-                    "MilkCollectionReportServlet");
+                    "milkcollectionReportServlet");
         }
         finally
         {
@@ -70,7 +70,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
             {
                 try
                 {
-                    ((MilkCollectionReportDaoImpl)dao).cleanUp();
+                    ((milkcollectionReportDaoImpl)dao).cleanUp();
                 }
                 catch(SQLException e)
                 {

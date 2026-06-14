@@ -36,7 +36,7 @@ CREATE TABLE farmers(
 );
 
 -- Milk Collection
-CREATE TABLE milkCollection(
+CREATE TABLE milkcollection(
     collectionId INT PRIMARY KEY AUTO_INCREMENT,
     farmerCode VARCHAR(20),
     collectionDate DATE,

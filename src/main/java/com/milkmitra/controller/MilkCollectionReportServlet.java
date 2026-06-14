@@ -12,16 +12,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 
-import com.milkmitra.dao.IMilkCollectionReportDao;
-import com.milkmitra.dao.MilkCollectionReportDaoImpl;
+import com.milkmitra.dao.ImilkcollectionReportDao;
+import com.milkmitra.dao.milkcollectionReportDaoImpl;
 import com.milkmitra.model.Collection;
 
 /**
  * Servlet implementation class MilkColelctionReportServlet
  */
 // This Servlet Is for Today's Collection Report
-@WebServlet("/MilkCollectionReportServlet")
-public class MilkCollectionReportServlet extends HttpServlet {
+@WebServlet("/milkcollectionReportServlet")
+public class milkcollectionReportServlet extends HttpServlet {
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		System.out.println("Milk Collection Report Servlet Called");
@@ -30,11 +30,11 @@ public class MilkCollectionReportServlet extends HttpServlet {
     	
 
     	
-    	IMilkCollectionReportDao dao = null;
+    	ImilkcollectionReportDao dao = null;
     	
     	try
     	{
-    		dao = new MilkCollectionReportDaoImpl();
+    		dao = new milkcollectionReportDaoImpl();
     		
     		List<Collection> collections =
     		        dao.getTodayCollections();
@@ -44,7 +44,7 @@ public class MilkCollectionReportServlet extends HttpServlet {
     		        collections);
 
     		request.getRequestDispatcher(
-    		        "MilkCollectionReport.jsp")
+    		        "milkcollectionReport.jsp")
     		       .forward(request,response);
     		
     		return;
@@ -59,7 +59,7 @@ public class MilkCollectionReportServlet extends HttpServlet {
     	        "System Error : " + e.getMessage()
     	    );
 
-    	    response.sendRedirect("MilkCollectionReport.jsp");
+    	    response.sendRedirect("milkcollectionReport.jsp");
     	    return;
     	}
     	finally
@@ -68,7 +68,7 @@ public class MilkCollectionReportServlet extends HttpServlet {
     	    {
     	        try
     	        {
-    	            ((MilkCollectionReportDaoImpl)dao).cleanUp();
+    	            ((milkcollectionReportDaoImpl)dao).cleanUp();
     	        }
     	        catch(SQLException e)
     	        {

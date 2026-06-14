@@ -2337,8 +2337,8 @@ td {
 				View Farmers</div>
 
 			<div class="nl">Operations</div>
-			<a href="MilkCollection.jsp" class="ni"><i class="ti ti-droplet"></i>Milk
-				Collection</a> <a href="MilkCollectionReportServlet?view=today"
+			<a href="milkcollection.jsp" class="ni"><i class="ti ti-droplet"></i>Milk
+				Collection</a> <a href="milkcollectionReportServlet?view=today"
 				class="ni"><i class="ti ti-droplet-filled-2"></i>Collection
 				Report</a> <a href="AdminDashboardServlet?view=payments"
 				class="ni <%="payments".equals(currentView) ? "active" : ""%>"><i
@@ -2663,7 +2663,7 @@ td {
 					<div class="mc-title">Add Farmer</div>
 					<div class="mc-sub">Register new farmer</div>
 					<div class="mc-arrow">Open →</div>
-				</a> <a href="MilkCollection.jsp" class="mod-card"
+				</a> <a href="milkcollection.jsp" class="mod-card"
 					style="--cc: #0d9488;">
 					<div class="mc-icon teal">
 						<i class="ti ti-droplet"></i>

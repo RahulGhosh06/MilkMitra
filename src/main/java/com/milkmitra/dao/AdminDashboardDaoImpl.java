@@ -24,7 +24,7 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 				+ "    sum(amount) totalValue,\r\n"
 				+ "    avg(fat) avgFat,\r\n"
 				+ "    avg(snf) avgSnf\r\n"
-				+ "from milkCollection\r\n"
+				+ "from milkcollection\r\n"
 				+ "where collectionDate = curdate()\r\n"
 				+ "and isActive = 1;";
 		pst1 = cn.prepareStatement(sql1);
@@ -33,7 +33,7 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 		String sql2 = "select\r\n"
 				+ "    shift,\r\n"
 				+ "    count(*) entries\r\n"
-				+ "from milkCollection\r\n"
+				+ "from milkcollection\r\n"
 				+ "where collectionDate = curdate()\r\n"
 				+ "and isActive = 1\r\n"
 				+ "group by shift;";
@@ -43,7 +43,7 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 		String sql3 = "select\r\n"
 				+ "    milkType,\r\n"
 				+ "    sum(quantity) qty\r\n"
-				+ "from milkCollection\r\n"
+				+ "from milkcollection\r\n"
 				+ "where collectionDate = curdate()\r\n"
 				+ "and isActive = 1\r\n"
 				+ "group by milkType;";

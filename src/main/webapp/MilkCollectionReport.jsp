@@ -751,7 +751,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
     </div>
     <nav class="sn-nav">
         <div class="sn-label">Today's View</div>
-        <a href="MilkCollectionReportServlet?view=today"
+        <a href="milkcollectionReportServlet?view=today"
            class="sn-item <%= "today".equals(currentView) ? "active" : "" %>">
             <i class="ti ti-report-analytics"></i>All Collections
             <span class="sn-pill">Today</span>
@@ -768,21 +768,21 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
         </a>
         <div class="sn-divider"></div>
         <div class="sn-label">Analysis</div>
-        <a href="MilkCollectionReport.jsp?view=datewise"
+        <a href="milkcollectionReport.jsp?view=datewise"
            class="sn-item <%= "datewise".equals(currentView) ? "active" : "" %>">
             <i class="ti ti-calendar-search"></i>Date-wise Report
         </a>
-        <a href="MilkCollectionReport.jsp?view=farmerwise"
+        <a href="milkcollectionReport.jsp?view=farmerwise"
            class="sn-item <%= "farmerwise".equals(currentView) ? "active" : "" %>">
             <i class="ti ti-users"></i>Farmer-wise Report
         </a>
-        <a href="MilkCollectionReport.jsp?view=monthly"
+        <a href="milkcollectionReport.jsp?view=monthly"
            class="sn-item <%= "monthly".equals(currentView) ? "active" : "" %>">
             <i class="ti ti-calendar-stats"></i>Monthly Report
         </a>
         <div class="sn-divider"></div>
         <div class="sn-label">Navigation</div>
-        <a href="MilkCollection.jsp" class="sn-item">
+        <a href="milkcollection.jsp" class="sn-item">
             <i class="ti ti-plus"></i>New Entry
         </a>
         <a href="AdminDashboardServlet" class="sn-item">
@@ -832,7 +832,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
             <div class="tb-date" id="dateStr"></div>
             <% if("today".equals(currentView)||isShift) { %>
             <%
-				String refreshUrl = "MilkCollectionReportServlet?view=today";
+				String refreshUrl = "milkcollectionReportServlet?view=today";
 
 				if(isMorning)
 				{
@@ -844,7 +844,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
 				}
 				else if("datewise".equals(currentView))
 				{
-    				refreshUrl = "MilkCollectionReport.jsp?view=datewise";
+    				refreshUrl = "milkcollectionReport.jsp?view=datewise";
 				}
 			%>
 
@@ -853,7 +853,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
 			</a>
             <button class="tb-icon" onclick="window.print()" title="Print"><i class="ti ti-printer"></i></button>
             <% } %>
-            <a href="MilkCollection.jsp" class="tb-btn"><i class="ti ti-plus"></i>New Entry</a>
+            <a href="milkcollection.jsp" class="tb-btn"><i class="ti ti-plus"></i>New Entry</a>
         </div>
     </div>
 
@@ -986,7 +986,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
                         <i class="ti ti-droplet-off"></i>
                         <div class="etitle">No collections yet</div>
                         <p>No milk has been recorded today.</p>
-                        <a href="MilkCollection.jsp"><i class="ti ti-plus"></i>Add Entry</a>
+                        <a href="milkcollection.jsp"><i class="ti ti-plus"></i>Add Entry</a>
                     </div>
                     <% } else { %>
                     <table>
@@ -1118,7 +1118,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
                     <i class="ti ti-droplet-off"></i>
                     <div class="etitle">No records found</div>
                     <p>No <%= isMorning?"morning":"evening" %> collections recorded yet.</p>
-                    <a href="MilkCollection.jsp"><i class="ti ti-plus"></i>Add Entry</a>
+                    <a href="milkcollection.jsp"><i class="ti ti-plus"></i>Add Entry</a>
                 </div>
                 <% } else { %>
                 <table>

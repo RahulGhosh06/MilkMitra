@@ -319,17 +319,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-primar
     </div>
     <nav class="sn-nav">
         <div class="sn-label">Today's View</div>
-        <a href="MilkCollectionReportServlet?view=today" class="sn-item"><i class="ti ti-report-analytics"></i>All Collections</a>
-        <a href="MilkCollectionReportServlet?shift=MORNING&view=morning" class="sn-item"><i class="ti ti-sun"></i>Morning Shift</a>
-        <a href="MilkCollectionReportServlet?shift=EVENING&view=evening" class="sn-item"><i class="ti ti-moon"></i>Evening Shift</a>
+        <a href="milkcollectionReportServlet?view=today" class="sn-item"><i class="ti ti-report-analytics"></i>All Collections</a>
+        <a href="milkcollectionReportServlet?shift=MORNING&view=morning" class="sn-item"><i class="ti ti-sun"></i>Morning Shift</a>
+        <a href="milkcollectionReportServlet?shift=EVENING&view=evening" class="sn-item"><i class="ti ti-moon"></i>Evening Shift</a>
         <div class="sn-divider"></div>
         <div class="sn-label">Analysis</div>
-        <a href="MilkCollectionReport.jsp?view=datewise" class="sn-item active"><i class="ti ti-calendar-search"></i>Date-wise Report</a>
-        <a href="MilkCollectionReport.jsp?view=farmerwise" class="sn-item"><i class="ti ti-users"></i>Farmer-wise Report</a>
-        <a href="MilkCollectionReport.jsp?view=monthly" class="sn-item"><i class="ti ti-calendar-stats"></i>Monthly Report</a>
+        <a href="milkcollectionReport.jsp?view=datewise" class="sn-item active"><i class="ti ti-calendar-search"></i>Date-wise Report</a>
+        <a href="milkcollectionReport.jsp?view=farmerwise" class="sn-item"><i class="ti ti-users"></i>Farmer-wise Report</a>
+        <a href="milkcollectionReport.jsp?view=monthly" class="sn-item"><i class="ti ti-calendar-stats"></i>Monthly Report</a>
         <div class="sn-divider"></div>
         <div class="sn-label">Navigation</div>
-        <a href="MilkCollection.jsp" class="sn-item"><i class="ti ti-plus"></i>New Entry</a>
+        <a href="milkcollection.jsp" class="sn-item"><i class="ti ti-plus"></i>New Entry</a>
         <a href="AdminDashboard.jsp" class="sn-item"><i class="ti ti-home"></i>Dashboard</a>
     </nav>
     <div class="sn-foot">
@@ -351,7 +351,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-primar
             <div class="tb-crumb">
                 <a href="AdminDashboard.jsp"><i class="ti ti-home" style="font-size:13px;vertical-align:-1px;"></i></a>
                 <span class="sep">/</span>
-                <a href="MilkCollectionReport.jsp?view=datewise">Reports</a>
+                <a href="milkcollectionReport.jsp?view=datewise">Reports</a>
                 <span class="sep">/</span>
                 <span style="color:var(--text-primary);font-weight:600;">Farmer Details</span>
             </div>
@@ -435,7 +435,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-primar
             <i class="ti ti-database-off"></i>
             <div class="etitle">No entries found</div>
             <p>No collection records for <%= farmerName %> in the selected date range.</p>
-            <a href="MilkCollectionReport.jsp?view=datewise"><i class="ti ti-arrow-left"></i>Back to Report</a>
+            <a href="milkcollectionReport.jsp?view=datewise"><i class="ti ti-arrow-left"></i>Back to Report</a>
         </div>
         <% } else { %>
         <div class="cards-grid">

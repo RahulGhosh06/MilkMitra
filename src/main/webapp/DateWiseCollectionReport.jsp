@@ -206,17 +206,17 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
     </div>
     <nav class="sn-nav">
         <div class="sn-label">Today's View</div>
-        <a href="MilkCollectionReportServlet?view=today" class="sn-item"><i class="ti ti-report-analytics"></i>All Collections</a>
-        <a href="MilkCollectionReportServlet?shift=MORNING&view=morning" class="sn-item"><i class="ti ti-sun"></i>Morning Shift</a>
-        <a href="MilkCollectionReportServlet?shift=EVENING&view=evening" class="sn-item"><i class="ti ti-moon"></i>Evening Shift</a>
+        <a href="milkcollectionReportServlet?view=today" class="sn-item"><i class="ti ti-report-analytics"></i>All Collections</a>
+        <a href="milkcollectionReportServlet?shift=MORNING&view=morning" class="sn-item"><i class="ti ti-sun"></i>Morning Shift</a>
+        <a href="milkcollectionReportServlet?shift=EVENING&view=evening" class="sn-item"><i class="ti ti-moon"></i>Evening Shift</a>
         <div class="sn-divider"></div>
         <div class="sn-label">Analysis</div>
-        <a href="MilkCollectionReport.jsp?view=datewise" class="sn-item active"><i class="ti ti-calendar-search"></i>Date-wise Report</a>
-        <a href="MilkCollectionReport.jsp?view=farmerwise" class="sn-item"><i class="ti ti-users"></i>Farmer-wise Report</a>
-        <a href="MilkCollectionReport.jsp?view=monthly" class="sn-item"><i class="ti ti-calendar-stats"></i>Monthly Report</a>
+        <a href="milkcollectionReport.jsp?view=datewise" class="sn-item active"><i class="ti ti-calendar-search"></i>Date-wise Report</a>
+        <a href="milkcollectionReport.jsp?view=farmerwise" class="sn-item"><i class="ti ti-users"></i>Farmer-wise Report</a>
+        <a href="milkcollectionReport.jsp?view=monthly" class="sn-item"><i class="ti ti-calendar-stats"></i>Monthly Report</a>
         <div class="sn-divider"></div>
         <div class="sn-label">Navigation</div>
-        <a href="MilkCollection.jsp" class="sn-item"><i class="ti ti-plus"></i>New Entry</a>
+        <a href="milkcollection.jsp" class="sn-item"><i class="ti ti-plus"></i>New Entry</a>
         <a href="AdminDashboard.jsp" class="sn-item"><i class="ti ti-home"></i>Dashboard</a>
     </nav>
     <div class="sn-foot">
@@ -253,7 +253,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
             <% if(!reports.isEmpty()) { %>
             <button class="tb-icon" onclick="window.print()" title="Print"><i class="ti ti-printer"></i></button>
             <% } %>
-            <a href="MilkCollection.jsp" class="tb-btn"><i class="ti ti-plus"></i>New Entry</a>
+            <a href="milkcollection.jsp" class="tb-btn"><i class="ti ti-plus"></i>New Entry</a>
         </div>
     </div>
 

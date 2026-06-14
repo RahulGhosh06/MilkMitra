@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.milkmitra.model.Collection;
 
-public interface IMilkCollectionDao
+public interface ImilkcollectionDao
 {
 	//1. Feature for Milk Collection Entry...
 	String addCollection(Collection collection) throws SQLException;
 
-	// MilkCollectionReport----------------------------------------------------------------
+	// milkcollectionReport----------------------------------------------------------------
 	
 }

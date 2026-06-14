@@ -14,19 +14,19 @@ import javax.servlet.http.HttpSession;
 
 import com.milkmitra.dao.FarmerDaoImpl;
 import com.milkmitra.dao.IFarmerDao;
-import com.milkmitra.dao.IMilkCollectionDao;
-import com.milkmitra.dao.MilkCollectionDaoImpl;
+import com.milkmitra.dao.ImilkcollectionDao;
+import com.milkmitra.dao.milkcollectionDaoImpl;
 import com.milkmitra.model.Collection;
 import com.milkmitra.model.Farmer;
 
 /**
- * Servlet implementation class MilkCollectionServlet
+ * Servlet implementation class milkcollectionServlet
  */
-@WebServlet("/MilkCollectionServlet")
-public class MilkCollectionServlet extends HttpServlet {
+@WebServlet("/milkcollectionServlet")
+public class milkcollectionServlet extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("MilkCollectionServlet Called");
+		System.out.println("milkcollectionServlet Called");
     	response.setContentType("text/html");
     	HttpSession session = request.getSession();
     	
@@ -43,7 +43,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	    );
 
     	    response.sendRedirect(
-    	        "MilkCollection.jsp"
+    	        "milkcollection.jsp"
     	    );
     	    return;
     	}
@@ -61,7 +61,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	        "Quantity must be greater than zero."
     	    );
 
-    	    response.sendRedirect("MilkCollection.jsp");
+    	    response.sendRedirect("milkcollection.jsp");
     	    return;
     	}
     	
@@ -79,7 +79,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	            "Buffalo milk requires minimum SNF 8.3"
     	        );
 
-    	        response.sendRedirect("MilkCollection.jsp");
+    	        response.sendRedirect("milkcollection.jsp");
     	        return;
     	    }
     	    else
@@ -98,7 +98,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	            "Cow milk requires minimum Fat 3.0 and SNF 8.0"
     	        );
 
-    	        response.sendRedirect("MilkCollection.jsp");
+    	        response.sendRedirect("milkcollection.jsp");
     	        return;
     	    }
     	    else
@@ -116,10 +116,10 @@ public class MilkCollectionServlet extends HttpServlet {
     	    shift = "EVENING";
     	}
     	
-    	IMilkCollectionDao dao = null;
+    	ImilkcollectionDao dao = null;
     	IFarmerDao farmerDao = null;
     	try {
-    		dao = new MilkCollectionDaoImpl();
+    		dao = new milkcollectionDaoImpl();
     		
     		farmerDao = new FarmerDaoImpl();
 
@@ -132,7 +132,7 @@ public class MilkCollectionServlet extends HttpServlet {
     		        "Farmer Code does not exist."
     		    );
 
-    		    response.sendRedirect("MilkCollection.jsp");
+    		    response.sendRedirect("milkcollection.jsp");
     		    return;
     		}
 
@@ -143,7 +143,7 @@ public class MilkCollectionServlet extends HttpServlet {
     		        "This farmer is inactive and cannot give milk."
     		    );
 
-    		    response.sendRedirect("MilkCollection.jsp");
+    		    response.sendRedirect("milkcollection.jsp");
     		    return;
     		}
     		
@@ -169,7 +169,7 @@ public class MilkCollectionServlet extends HttpServlet {
     		        status
     		    );
 
-    		    response.sendRedirect("MilkCollection.jsp");
+    		    response.sendRedirect("milkcollection.jsp");
     		    return;
     		}
     		else
@@ -179,7 +179,7 @@ public class MilkCollectionServlet extends HttpServlet {
     		        "Unable to save collection."
     		    );
 
-    		    response.sendRedirect("MilkCollection.jsp");
+    		    response.sendRedirect("milkcollection.jsp");
     		    return;
     		}
     	}
@@ -211,7 +211,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	        );
     	    }
 
-    	    response.sendRedirect("MilkCollection.jsp");
+    	    response.sendRedirect("milkcollection.jsp");
     	    return;
     	}
     	catch(Exception e)
@@ -223,7 +223,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	        "System Error : " + e.getMessage()
     	    );
 
-    	    response.sendRedirect("MilkCollection.jsp");
+    	    response.sendRedirect("milkcollection.jsp");
     	    return;
     	}
     	finally
@@ -232,7 +232,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	    {
     	        try
     	        {
-    	            ((MilkCollectionDaoImpl)dao).cleanUp();
+    	            ((milkcollectionDaoImpl)dao).cleanUp();
     	        }
     	        catch(SQLException e)
     	        {

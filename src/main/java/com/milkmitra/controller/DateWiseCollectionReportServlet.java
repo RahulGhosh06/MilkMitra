@@ -12,9 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.milkmitra.dao.MilkCollectionReportDaoImpl;
-import com.milkmitra.dao.IMilkCollectionReportDao;
-import com.milkmitra.dao.MilkCollectionDaoImpl;
+import com.milkmitra.dao.milkcollectionReportDaoImpl;
+import com.milkmitra.dao.ImilkcollectionReportDao;
+import com.milkmitra.dao.milkcollectionDaoImpl;
 import com.milkmitra.model.Report;
 
 /**
@@ -31,10 +31,10 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     	String fromDate = request.getParameter("fromDate");
     	String toDate = request.getParameter("toDate");
     	
-    	IMilkCollectionReportDao dao = null;
+    	ImilkcollectionReportDao dao = null;
     	try
     	{
-    		dao = new MilkCollectionReportDaoImpl();
+    		dao = new milkcollectionReportDaoImpl();
     		
     		List<Report> reports =
     		        dao.getDateWiseCollectionReport(
@@ -61,7 +61,7 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     		        "datewise");
 
     		request.getRequestDispatcher(
-    		        "MilkCollectionReport.jsp")
+    		        "milkcollectionReport.jsp")
     		       .forward(request, response);
 
     		return;
@@ -77,7 +77,7 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     	        "System Error : " + e.getMessage()
     	    );
 
-    	    response.sendRedirect("MilkCollectionReport.jsp");
+    	    response.sendRedirect("milkcollectionReport.jsp");
     	    return;
     	}
     	finally
@@ -86,7 +86,7 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     	    {
     	        try
     	        {
-    	            ((MilkCollectionReportDaoImpl)dao).cleanUp();
+    	            ((milkcollectionReportDaoImpl)dao).cleanUp();
     	        }
     	        catch(SQLException e)
     	        {

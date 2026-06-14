@@ -13,12 +13,12 @@ import com.milkmitra.model.Collection;
 import com.milkmitra.model.Report;
 import com.milkmitra.utils.DBConnection;
 
-public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
+public class milkcollectionReportDaoImpl implements ImilkcollectionReportDao
 {
 	private Connection cn;
 	private PreparedStatement pst1, pst2, pst3, pst4;
 	
-	public MilkCollectionReportDaoImpl() throws ClassNotFoundException, Exception
+	public milkcollectionReportDaoImpl() throws ClassNotFoundException, Exception
 	{
 		cn = DBConnection.openConnection();
 		
@@ -26,7 +26,7 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 		
 		//1. Today's Collection Report
 		String sql1 =
-				"select * from milkCollection " +
+				"select * from milkcollection " +
 				"where collectionDate = curdate() " +
 				"and isActive = 1 " +
 				"order by shift, farmerCode";
@@ -34,7 +34,7 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 		pst1 = cn.prepareStatement(sql1);
 		
 		//2. ShiftWise Collection Report
-		String sql2 = "select * from milkCollection where collectionDate = curdate() and shift = ? and isActive = 1 order by farmerCode" ;
+		String sql2 = "select * from milkcollection where collectionDate = curdate() and shift = ? and isActive = 1 order by farmerCode" ;
 		pst2 = cn.prepareStatement(sql2);
 		
 		
@@ -43,7 +43,7 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 				+ "       f.farmer_name,\r\n"
 				+ "       sum(mc.quantity) totalQty,\r\n"
 				+ "       sum(mc.amount) totalAmount\r\n"
-				+ "from milkCollection mc\r\n"
+				+ "from milkcollection mc\r\n"
 				+ "join farmers f\r\n"
 				+ "on mc.farmerCode = f.farmer_code\r\n"
 				+ "where mc.collectionDate between ? and ?\r\n"
@@ -51,7 +51,7 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 				+ "order by mc.farmerCode" ;
 		pst3 = cn.prepareStatement(sql3);
 		
-		String sql4 = "select * from milkCollection where farmerCode = ? and collectionDate between ? and ? order by collectionDate desc";
+		String sql4 = "select * from milkcollection where farmerCode = ? and collectionDate between ? and ? order by collectionDate desc";
 		pst4 = cn.prepareStatement(sql4);
 				
 		
@@ -249,7 +249,7 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 	    if(cn != null)
 	        cn.close();
 
-	    System.out.println("MilkCollection Report Dao Cleaned Up!!");
+	    System.out.println("milkcollection Report Dao Cleaned Up!!");
 	}
 
 }
