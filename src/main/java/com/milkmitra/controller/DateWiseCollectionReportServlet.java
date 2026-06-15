@@ -60,7 +60,7 @@ public class DateWiseCollectionReportServlet extends HttpServlet {
     		        "datewise");
 
     		request.getRequestDispatcher(
-    		        "milkCollectionReport.jsp")
+    		        "milkcollectionReport.jsp")
     		       .forward(request, response);
 
     		return;
