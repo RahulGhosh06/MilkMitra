@@ -94,15 +94,21 @@ String cycleEndAttr = request.getAttribute("cycleEnd") != null ? request.getAttr
 //Override isPaymentView so topbar title and nav still work
 boolean isPaymentView = "paymentHistory".equals(currentView) || isCycleDetailScreen;
 
-java.time.LocalDate today2 = java.time.LocalDate.now();
+java.time.ZoneId indiaZone = java.time.ZoneId.of("Asia/Kolkata");
+
+java.time.LocalDate today2 = java.time.LocalDate.now(indiaZone);
+
 String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
 		"November", "December"};
+
 java.time.DayOfWeek dow = today2.getDayOfWeek();
 String dayName = days[dow.getValue() % 7];
+
 String dateStr = dayName + ", " + today2.getDayOfMonth() + " " + months[today2.getMonthValue() - 1];
 
-int hour = java.time.LocalTime.now().getHour();
+int hour = java.time.LocalTime.now(indiaZone).getHour();
+
 String greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 %>
 <!DOCTYPE html>
@@ -1598,7 +1604,8 @@ to {
 			<!-- /coming -->
 
 			<!-- ── PAYMENT HISTORY ── -->
-			<div class="screen <%=isPaymentView && !isCycleDetailScreen ? "active" : ""%>"
+			<div
+				class="screen <%=isPaymentView && !isCycleDetailScreen ? "active" : ""%>"
 				id="screen-payment">
 				<div class="pay-screen">
 
@@ -1716,7 +1723,7 @@ to {
 
 			<!-- ── CYCLE DETAIL ── -->
 			<%
-			 isCycleDetailScreen = "cycleDetail".equals(request.getAttribute("currentView"));
+			isCycleDetailScreen = "cycleDetail".equals(request.getAttribute("currentView"));
 			List<PaymentSummary> cycleEntries2 = (List<PaymentSummary>) request.getAttribute("cycleEntries");
 			double cdTotalMilk = 0, cdTotalAmt = 0;
 			if (cycleEntries2 != null) {
