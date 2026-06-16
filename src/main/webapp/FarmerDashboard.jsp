@@ -75,6 +75,7 @@ double todayTotal = morningTotal + eveningTotal;
 
 // Payment history
 String currentView = (String) request.getAttribute("currentView");
+boolean isCycleDetailScreen = "cycleDetail".equals(currentView);
 
 List<PaymentSummary> paymentList = (List<PaymentSummary>) request.getAttribute("paymentList");
 double histTotalMilk = 0, histTotalAmt = 0;
@@ -86,13 +87,12 @@ if (paymentList != null) {
 }
 
 //Cycle detail view
-boolean isCycleDetail = "cycleDetail".equals(currentView);
 List<PaymentSummary> cycleEntries = (List<PaymentSummary>) request.getAttribute("cycleEntries");
 String cycleStartAttr = request.getAttribute("cycleStart") != null ? request.getAttribute("cycleStart").toString() : "";
 String cycleEndAttr = request.getAttribute("cycleEnd") != null ? request.getAttribute("cycleEnd").toString() : "";
 
 //Override isPaymentView so topbar title and nav still work
-boolean isPaymentView = "paymentHistory".equals(currentView) || isCycleDetail;
+boolean isPaymentView = "paymentHistory".equals(currentView) || isCycleDetailScreen;
 
 java.time.LocalDate today2 = java.time.LocalDate.now();
 String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
@@ -1271,7 +1271,7 @@ to {
 			<button class="tb-menu" onclick="openDrawer()" aria-label="Open menu">
 				<i class="ti ti-menu-2" aria-hidden="true"></i>
 			</button>
-			<h1 class="tb-title" id="page-title"><%=isPaymentView ? "Latest Payment" : "Dashboard"%></h1>
+			<h1 class="tb-title" id="page-title"><%=isCycleDetailScreen ? "Payment Details" : isPaymentView ? "Latest Payment" : "Dashboard"%></h1>
 			<button class="tb-bell" aria-label="Notifications">
 				<i class="ti ti-bell" aria-hidden="true"></i>
 			</button>
@@ -1598,7 +1598,7 @@ to {
 			<!-- /coming -->
 
 			<!-- ── PAYMENT HISTORY ── -->
-			<div class="screen <%=isPaymentView ? "active" : ""%>"
+			<div class="screen <%=isPaymentView && !isCycleDetailScreen ? "active" : ""%>"
 				id="screen-payment">
 				<div class="pay-screen">
 
@@ -1716,7 +1716,7 @@ to {
 
 			<!-- ── CYCLE DETAIL ── -->
 			<%
-			boolean isCycleDetailScreen = "cycleDetail".equals(request.getAttribute("currentView"));
+			 isCycleDetailScreen = "cycleDetail".equals(request.getAttribute("currentView"));
 			List<PaymentSummary> cycleEntries2 = (List<PaymentSummary>) request.getAttribute("cycleEntries");
 			double cdTotalMilk = 0, cdTotalAmt = 0;
 			if (cycleEntries2 != null) {
