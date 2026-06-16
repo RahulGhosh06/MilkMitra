@@ -1,6 +1,7 @@
 package com.milkmitra.dao;
 
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 import com.milkmitra.model.PaymentSummary;
@@ -14,5 +15,8 @@ public interface IPaymentDao {
 
 	// 3. Feature for Payment Cycle History
 	List<PaymentSummary> getPaymentHistory(String farmerCode) throws SQLException;
+	
+	//4. Feature for smart cards in payment cycle
+	List<PaymentSummary> getCycleEntries(String farmerCode, LocalDate cycleStart, LocalDate cycleEnd) throws SQLException;
 
 }

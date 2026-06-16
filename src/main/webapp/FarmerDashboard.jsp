@@ -1,11 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"
-	import="com.milkmitra.model.Farmer, com.milkmitra.model.User, java.util.*"
-	import="com.milkmitra.model.Farmer, 
-                 com.milkmitra.model.User, 
-                 com.milkmitra.model.FarmerDashboard,
-                 java.util.*"
-    import="com.milkmitra.model.PaymentSummary"%>
+	import="com.milkmitra.model.Farmer,
+	        com.milkmitra.model.User,
+	        com.milkmitra.model.FarmerDashboard,
+	        com.milkmitra.model.PaymentSummary,
+	        java.util.*"
+	import="com.milkmitra.model.Farmer,
+            com.milkmitra.model.User,
+            com.milkmitra.model.FarmerDashboard,
+            com.milkmitra.model.PaymentSummary,
+            java.time.LocalDate,
+            java.util.*"%>
 <%
 response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
 response.setHeader("Pragma", "no-cache");
@@ -36,12 +41,10 @@ int activeDays = dashboard != null ? dashboard.getTotalActiveDaysThisYear() : 0;
 double totalMilkYear = dashboard != null ? dashboard.getTotalMilkThisYear() : 0;
 double totalEarnYear = dashboard != null ? dashboard.getTotalEarningThisYear() : 0;
 
-// Progress bar width — cap at 100%
-// Assuming 365 days max for days ring
 int daysPercent = Math.min((int) ((activeDays / 365.0) * 100), 100);
-// Assuming a yearly milk goal of 1000L — adjust as needed
 int milkPercent = Math.min((int) ((totalMilkYear / 1000.0) * 100), 100);
-PaymentSummary cycleSummary = (PaymentSummary)request.getAttribute("cycleSummary");
+
+PaymentSummary cycleSummary = (PaymentSummary) request.getAttribute("cycleSummary");
 
 double todayMilk = dashboard != null ? dashboard.getTodayMilk() : 0;
 double todayEarning = dashboard != null ? dashboard.getTodayEarning() : 0;
@@ -70,13 +73,34 @@ double morningTotal = morningCowAmt + morningBufAmt;
 double eveningTotal = eveningCowAmt + eveningBufAmt;
 double todayTotal = morningTotal + eveningTotal;
 
-java.time.LocalDate today = java.time.LocalDate.now();
+// Payment history
+String currentView = (String) request.getAttribute("currentView");
+
+List<PaymentSummary> paymentList = (List<PaymentSummary>) request.getAttribute("paymentList");
+double histTotalMilk = 0, histTotalAmt = 0;
+if (paymentList != null) {
+	for (PaymentSummary ps : paymentList) {
+		histTotalMilk += ps.getTotalMilk();
+		histTotalAmt += ps.getTotalAmount();
+	}
+}
+
+//Cycle detail view
+boolean isCycleDetail = "cycleDetail".equals(currentView);
+List<PaymentSummary> cycleEntries = (List<PaymentSummary>) request.getAttribute("cycleEntries");
+String cycleStartAttr = request.getAttribute("cycleStart") != null ? request.getAttribute("cycleStart").toString() : "";
+String cycleEndAttr = request.getAttribute("cycleEnd") != null ? request.getAttribute("cycleEnd").toString() : "";
+
+//Override isPaymentView so topbar title and nav still work
+boolean isPaymentView = "paymentHistory".equals(currentView) || isCycleDetail;
+
+java.time.LocalDate today2 = java.time.LocalDate.now();
 String[] days = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
 		"November", "December"};
-java.time.DayOfWeek dow = today.getDayOfWeek();
+java.time.DayOfWeek dow = today2.getDayOfWeek();
 String dayName = days[dow.getValue() % 7];
-String dateStr = dayName + ", " + today.getDayOfMonth() + " " + months[today.getMonthValue() - 1];
+String dateStr = dayName + ", " + today2.getDayOfMonth() + " " + months[today2.getMonthValue() - 1];
 
 int hour = java.time.LocalTime.now().getHour();
 String greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -93,7 +117,6 @@ String greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "G
 	rel="stylesheet">
 <link rel="stylesheet"
 	href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-
 <style>
 *, *::before, *::after {
 	margin: 0;
@@ -128,7 +151,6 @@ body {
 	-webkit-font-smoothing: antialiased;
 }
 
-/* ── APP SHELL ── */
 .app {
 	max-width: 420px;
 	margin: 0 auto;
@@ -137,7 +159,7 @@ body {
 	flex-direction: column;
 }
 
-/* ── TOP BAR ── */
+/* TOP BAR */
 .topbar {
 	background: var(--surface2);
 	border-bottom: 0.5px solid var(--border);
@@ -181,7 +203,7 @@ body {
 	cursor: pointer;
 }
 
-/* ── DRAWER OVERLAY ── */
+/* DRAWER */
 .drawer-overlay {
 	position: fixed;
 	inset: 0;
@@ -197,7 +219,6 @@ body {
 	pointer-events: all;
 }
 
-/* ── SIDE DRAWER ── */
 .drawer {
 	position: fixed;
 	top: 0;
@@ -354,7 +375,7 @@ body {
 	font-size: 17px;
 }
 
-/* ── CONTENT ── */
+/* CONTENT */
 .content {
 	flex: 1;
 	overflow-y: auto;
@@ -369,7 +390,7 @@ body {
 	display: block;
 }
 
-/* ── BOTTOM NAV ── */
+/* BOTTOM NAV */
 .bottom-nav {
 	position: fixed;
 	bottom: 0;
@@ -408,7 +429,7 @@ body {
 	font-size: 22px;
 }
 
-/* ── DASHBOARD ── */
+/* DASHBOARD */
 .dash-header {
 	padding: 20px 18px 0;
 	display: flex;
@@ -444,7 +465,6 @@ body {
 	flex-shrink: 0;
 }
 
-/* progress card */
 .progress-card {
 	margin: 18px 16px 0;
 	background: var(--surface);
@@ -503,7 +523,6 @@ body {
 	border-radius: 3px;
 }
 
-/* stat tiles */
 .stat-grid {
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -545,7 +564,6 @@ body {
 	font-weight: 500;
 }
 
-/* collection card */
 .coll-card {
 	margin: 14px 16px 0;
 	background: var(--surface);
@@ -653,45 +671,7 @@ body {
 	margin-left: 2px;
 }
 
-/* quick tiles */
-.quick-grid {
-	display: grid;
-	grid-template-columns: repeat(2, minmax(0, 1fr));
-	gap: 10px;
-	padding: 14px 16px 20px;
-}
-
-.quick-tile {
-	background: var(--surface);
-	border: 0.5px solid var(--border);
-	border-radius: var(--radius);
-	padding: 14px;
-	cursor: pointer;
-	transition: background .15s;
-}
-
-.quick-tile:hover {
-	background: var(--surface3);
-}
-
-.quick-tile i {
-	font-size: 22px;
-}
-
-.quick-name {
-	font-size: 13px;
-	font-weight: 500;
-	color: var(--text);
-	margin-top: 10px;
-}
-
-.quick-sub {
-	font-size: 11px;
-	color: var(--text2);
-	margin-top: 2px;
-}
-
-/* ── COMING SOON SCREEN ── */
+/* COMING SOON */
 .coming-screen {
 	padding: 20px 16px;
 }
@@ -783,7 +763,219 @@ body {
 	white-space: nowrap;
 }
 
-/* ── PROFILE SCREEN ── */
+/* PAYMENT HISTORY */
+.pay-screen {
+	padding: 16px 16px 80px;
+}
+
+.pay-year-badge {
+	background: var(--surface);
+	border: 0.5px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 10px 14px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin-bottom: 12px;
+}
+
+.pay-year-badge i {
+	font-size: 20px;
+	color: var(--teal);
+}
+
+.pay-year-lbl {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text);
+}
+
+.pay-year-hint {
+	font-size: 11px;
+	color: var(--text2);
+	margin-top: 2px;
+}
+
+.pay-summary-bar {
+	background: var(--surface);
+	border: 0.5px solid var(--border);
+	border-radius: var(--radius);
+	padding: 14px 16px;
+	margin-bottom: 14px;
+}
+
+.pay-sbar-title {
+	font-size: 10px;
+	color: var(--text2);
+	text-transform: uppercase;
+	letter-spacing: .5px;
+	font-weight: 700;
+	margin-bottom: 10px;
+}
+
+.pay-sbar-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+}
+
+.pay-sbar-item {
+	background: rgba(72, 199, 162, 0.06);
+	border-radius: var(--radius-sm);
+	padding: 10px 12px;
+}
+
+.pay-sbar-lbl {
+	font-size: 10px;
+	color: var(--text2);
+	margin-bottom: 3px;
+}
+
+.pay-sbar-val {
+	font-size: 18px;
+	font-weight: 600;
+	color: var(--text);
+}
+
+.pay-sbar-unit {
+	font-size: 10px;
+	color: var(--text2);
+	margin-left: 2px;
+}
+
+.pay-list-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+	padding: 0 2px;
+}
+
+.pay-list-title {
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--text2);
+	text-transform: uppercase;
+	letter-spacing: .5px;
+}
+
+.pay-list-count {
+	font-size: 11px;
+	color: var(--text3);
+}
+
+.pay-card {
+	background: var(--surface);
+	border: 0.5px solid var(--border);
+	border-radius: var(--radius);
+	overflow: hidden;
+	margin-bottom: 10px;
+	cursor: pointer;
+	transition: background .15s;
+}
+
+.pay-card:hover {
+	background: var(--surface3);
+}
+
+.pay-card-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 14px 16px;
+}
+
+.pay-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	flex-shrink: 0;
+}
+
+.pay-info {
+	flex: 1;
+}
+
+.pay-range {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text);
+	margin-bottom: 2px;
+}
+
+.pay-meta {
+	font-size: 11px;
+	color: var(--text2);
+}
+
+.pay-amt {
+	font-size: 16px;
+	font-weight: 600;
+	color: var(--teal);
+	margin-right: 4px;
+}
+
+.pay-chev {
+	font-size: 18px;
+	color: var(--text3);
+	transition: transform .2s;
+}
+
+.pay-detail {
+	display: none;
+	background: var(--surface2);
+	border-top: 0.5px solid var(--border);
+	padding: 12px 16px;
+}
+
+.pay-detail-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 6px 0;
+	border-bottom: 0.5px solid rgba(72, 199, 162, 0.07);
+}
+
+.pay-detail-row:last-child {
+	border-bottom: none;
+}
+
+.pay-detail-key {
+	font-size: 12px;
+	color: var(--text2);
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.pay-detail-key i {
+	font-size: 15px;
+	color: var(--teal-d);
+}
+
+.pay-detail-val {
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--text);
+}
+
+.pay-empty {
+	text-align: center;
+	padding: 40px 20px;
+	color: var(--text3);
+}
+
+.pay-empty i {
+	font-size: 40px;
+	display: block;
+	margin-bottom: 10px;
+}
+
+.pay-empty p {
+	font-size: 13px;
+}
+
+/* PROFILE */
 .profile-header {
 	background: var(--surface);
 	border-bottom: 0.5px solid var(--border);
@@ -823,7 +1015,7 @@ body {
 }
 
 .profile-body {
-	padding: 14px 14px;
+	padding: 14px;
 }
 
 .prof-section {
@@ -892,6 +1084,129 @@ to {
 .screen.active>* {
 	animation: fadeUp .22s ease both;
 }
+/* View button */
+.pay-view-btn-row {
+	margin-top: 10px;
+	display: flex;
+	justify-content: flex-end;
+}
+
+.pay-view-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: var(--teal);
+	color: #111;
+	padding: 7px 16px;
+	border-radius: 20px;
+	font-size: 0.82rem;
+	font-weight: 700;
+	text-decoration: none;
+	transition: background .2s;
+}
+
+.pay-view-btn:hover {
+	background: var(--teal-d);
+	color: #fff;
+}
+
+/* Cycle detail header */
+.cycle-detail-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 16px;
+}
+
+.cycle-back-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	color: var(--teal);
+	font-weight: 700;
+	text-decoration: none;
+	font-size: 0.88rem;
+	background: var(--teal-glow);
+	border: 0.5px solid var(--teal-line);
+	padding: 6px 12px;
+	border-radius: 20px;
+}
+
+.cycle-detail-title {
+	font-weight: 700;
+	font-size: 1rem;
+	color: var(--text);
+}
+
+.cycle-detail-subtitle {
+	font-size: 0.75rem;
+	color: var(--text2);
+	margin-top: 2px;
+}
+
+/* Entry smart cards */
+.entry-card {
+	background: var(--surface);
+	border: 0.5px solid var(--border);
+	border-radius: var(--radius);
+	padding: 14px 16px;
+	margin-bottom: 12px;
+}
+
+.entry-card-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 14px 10px;
+}
+
+.entry-field {
+	display: flex;
+	flex-direction: column;
+	gap: 3px;
+}
+
+.entry-lbl {
+	font-size: 0.68rem;
+	color: var(--teal);
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.4px;
+}
+
+.entry-val {
+	font-size: 0.9rem;
+	color: var(--text);
+	font-weight: 600;
+}
+
+.entry-amount {
+	color: var(--teal);
+	font-size: 1rem;
+	font-weight: 700;
+}
+
+.cycle-total-bar {
+	background: rgba(72, 199, 162, 0.08);
+	border: 0.5px solid var(--border);
+	border-radius: var(--radius-sm);
+	padding: 12px 16px;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 14px;
+}
+
+.cycle-total-lbl {
+	font-size: 12px;
+	color: var(--text2);
+	font-weight: 600;
+}
+
+.cycle-total-val {
+	font-size: 18px;
+	font-weight: 700;
+	color: var(--teal);
+}
 </style>
 </head>
 <body>
@@ -917,13 +1232,13 @@ to {
 			</div>
 			<nav class="dr-nav">
 				<div class="dn-lbl">Main Menu</div>
-				<div class="dr-item active"
+				<div class="dr-item <%=isPaymentView ? "" : "active"%>"
 					onclick="navTo('dashboard',this,'Dashboard');closeDrawer()">
 					<i class="ti ti-home"></i>Dashboard
 				</div>
-				<div class="dr-item"
-					onclick="navTo('coming',this,'Features Coming Soon');closeDrawer()">
-					<i class="ti ti-cash"></i>Latest Payment <span class="coming-tag">SOON</span>
+				<div class="dr-item <%=isPaymentView ? "active" : ""%>"
+					onclick="window.location.href='FarmerPaymentHistoryServlet';closeDrawer()">
+					<i class="ti ti-cash"></i>Latest Payment
 				</div>
 				<div class="dr-item"
 					onclick="navTo('coming',this,'Features Coming Soon');closeDrawer()">
@@ -956,7 +1271,7 @@ to {
 			<button class="tb-menu" onclick="openDrawer()" aria-label="Open menu">
 				<i class="ti ti-menu-2" aria-hidden="true"></i>
 			</button>
-			<h1 class="tb-title" id="page-title">Dashboard</h1>
+			<h1 class="tb-title" id="page-title"><%=isPaymentView ? "Latest Payment" : "Dashboard"%></h1>
 			<button class="tb-bell" aria-label="Notifications">
 				<i class="ti ti-bell" aria-hidden="true"></i>
 			</button>
@@ -966,9 +1281,9 @@ to {
 		<div class="content">
 
 			<!-- ── DASHBOARD ── -->
-			<div class="screen active" id="screen-dashboard">
+			<div class="screen <%=isPaymentView ? "" : "active"%>"
+				id="screen-dashboard">
 
-				<!-- Header greeting -->
 				<div class="dash-header">
 					<div>
 						<div class="dash-date"><%=dateStr%></div>
@@ -979,186 +1294,148 @@ to {
 				</div>
 
 				<div class="progress-card">
-					<!-- LEFT: Ring -->
 					<div class="ring-wrap">
 						<svg style="transform: rotate(-90deg)" width="130" height="130"
 							viewBox="0 0 130 130">
-            <circle cx="65" cy="65" r="50" fill="none"
+				<circle cx="65" cy="65" r="50" fill="none"
 								stroke="rgba(72,199,162,0.09)" stroke-width="11" />
-            <circle cx="65" cy="65" r="50" fill="none" stroke="#48c7a2"
+				<circle cx="65" cy="65" r="50" fill="none" stroke="#48c7a2"
 								stroke-width="11" stroke-dasharray="314.2"
 								stroke-dashoffset="<%=(int) (314.2 - (314.2 * daysPercent / 100))%>"
 								stroke-linecap="round" />
-            <circle cx="65" cy="65" r="36" fill="none"
+				<circle cx="65" cy="65" r="36" fill="none"
 								stroke="rgba(72,199,162,0.07)" stroke-width="8" />
-            <circle cx="65" cy="65" r="36" fill="none" stroke="#2a8f72"
+				<circle cx="65" cy="65" r="36" fill="none" stroke="#2a8f72"
 								stroke-width="8" stroke-dasharray="226.2"
 								stroke-dashoffset="<%=(int) (226.2 - (226.2 * milkPercent / 100))%>"
 								stroke-linecap="round" />
-        </svg>
+			</svg>
 						<div class="ring-label">
 							<div class="ring-num"><%=activeDays%></div>
 							<div class="ring-sub">days active</div>
 						</div>
 					</div>
-
-					<!-- RIGHT: Progress bars -->
 					<div style="flex: 1">
 						<div
 							style="font-size: 11px; color: var(--text2); margin-bottom: 14px;">Season
 							overview</div>
-
 						<div class="prog-label">
 							<span style="color: var(--teal); font-size: 12px;">Total
 								Earning</span> <span
-								style="color: var(--text); font-size: 12px; font-weight: 500;">
-								₹<%=String.format("%.0f", totalEarnYear)%>
-							</span>
+								style="color: var(--text); font-size: 12px; font-weight: 500;">₹<%=String.format("%.0f", totalEarnYear)%></span>
 						</div>
 						<div class="prog-track">
 							<div class="prog-fill"
 								style="background:var(--teal);width:<%=daysPercent%>%"></div>
 						</div>
-
 						<div class="prog-label">
 							<span style="color: var(--teal-d); font-size: 12px;">Total
 								Milk</span> <span
-								style="color: var(--text); font-size: 12px; font-weight: 500;">
-								<%=String.format("%.2f", totalMilkYear)%> L
-							</span>
+								style="color: var(--text); font-size: 12px; font-weight: 500;"><%=String.format("%.2f", totalMilkYear)%>
+								L</span>
 						</div>
 						<div class="prog-track" style="margin-bottom: 0">
 							<div class="prog-fill"
 								style="background:var(--teal-d);width:<%=milkPercent%>%"></div>
 						</div>
 					</div>
-
 				</div>
-				<!-- /progress-card -->
 
 				<div class="stat-grid">
 					<div class="stat-tile">
 						<i class="ti ti-droplet" style="color: var(--teal)"
 							aria-hidden="true"></i>
-
-						<div class="stat-num">
-							<%=String.format("%.2f", cycleSummary.getTotalMilk())%>
-						</div>
-
+						<div class="stat-num"><%=String.format("%.2f", cycleSummary.getTotalMilk())%></div>
 						<div class="stat-lbl">Total Litres This Cycle</div>
-
 						<span class="stat-pill"
 							style="background: rgba(72, 199, 162, 0.1); color: var(--teal);">
-
 							+<%=String.format("%.2f", todayMilk)%> today
-
 						</span>
 					</div>
-
 					<div class="stat-tile">
-
 						<i class="ti ti-cash" style="color: var(--teal-d)"
 							aria-hidden="true"></i>
-
 						<div class="stat-num">
-
-							₹<%=String.format("%.0f", cycleSummary.getTotalAmount())%>
-
-						</div>
-
+							₹<%=String.format("%.0f", cycleSummary.getTotalAmount())%></div>
 						<div class="stat-lbl">Total Earned This Cycle</div>
-
 						<span class="stat-pill"
 							style="background: rgba(72, 199, 162, 0.1); color: var(--teal);">
-
 							+<%=String.format("%.0f", todayEarning)%> Rs today
-
 						</span>
-
 					</div>
 				</div>
 
 				<div class="coll-card">
 					<div class="coll-head">
 						<span class="coll-title">Today's collection</span> <span
-							class="logged-pill"> <i class="ti ti-check"
-							style="font-size: 11px"></i> Logged
-						</span>
+							class="logged-pill"><i class="ti ti-check"
+							style="font-size: 11px"></i> Logged</span>
 					</div>
-
-					<!-- SHIFT GRID -->
 					<div class="shift-grid">
-
 						<!-- MORNING -->
 						<div>
-							<div class="shift-lbl">☀️ Morning</div>
-
+							<div class="shift-lbl">&#9728;&#65039; Morning</div>
 							<%
 							if (morningCowQty > 0) {
 							%>
 							<div style="margin-bottom: 10px;">
 								<div
-									style="font-size: 10px; color: var(--teal); font-weight: 700; margin-bottom: 6px; letter-spacing: .04em;">🐄
+									style="font-size: 10px; color: var(--teal); font-weight: 700; margin-bottom: 6px; letter-spacing: .04em;">&#x1F404;
 									COW</div>
 								<div class="shift-row">
-									<span class="shift-key">Qty</span> <span class="shift-val"><%=String.format("%.2f", morningCowQty)%><span
+									<span class="shift-key">Qty</span><span class="shift-val"><%=String.format("%.2f", morningCowQty)%><span
 										class="shift-unit">L</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">FAT</span> <span class="shift-val"><%=String.format("%.2f", morningCowFat)%><span
+									<span class="shift-key">FAT</span><span class="shift-val"><%=String.format("%.2f", morningCowFat)%><span
 										class="shift-unit">%</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">SNF</span> <span class="shift-val"><%=String.format("%.2f", morningCowSnf)%><span
+									<span class="shift-key">SNF</span><span class="shift-val"><%=String.format("%.2f", morningCowSnf)%><span
 										class="shift-unit">%</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">Amt</span> <span class="shift-val"
-										style="color: var(--teal); font-size: 14px;"> ₹<%=String.format("%.0f", morningCowAmt)%>
-									</span>
+									<span class="shift-key">Amt</span><span class="shift-val"
+										style="color: var(--teal); font-size: 14px;">&#8377;<%=String.format("%.0f", morningCowAmt)%></span>
 								</div>
 							</div>
 							<%
 							}
 							%>
-
 							<%
 							if (morningBufQty > 0) {
 							%>
 							<%
 							if (morningCowQty > 0) {
-							%>
-							<div
+							%><div
 								style="border-top: 0.5px solid var(--border); margin: 8px 0;"></div>
 							<%
 							}
 							%>
 							<div>
 								<div
-									style="font-size: 10px; color: var(--teal-d); font-weight: 700; margin-bottom: 6px; letter-spacing: .04em;">🐃
+									style="font-size: 10px; color: var(--teal-d); font-weight: 700; margin-bottom: 6px; letter-spacing: .04em;">&#x1F403;
 									BUFFALO</div>
 								<div class="shift-row">
-									<span class="shift-key">Qty</span> <span class="shift-val"><%=String.format("%.2f", morningBufQty)%><span
+									<span class="shift-key">Qty</span><span class="shift-val"><%=String.format("%.2f", morningBufQty)%><span
 										class="shift-unit">L</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">FAT</span> <span class="shift-val"><%=String.format("%.2f", morningBufFat)%><span
+									<span class="shift-key">FAT</span><span class="shift-val"><%=String.format("%.2f", morningBufFat)%><span
 										class="shift-unit">%</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">SNF</span> <span class="shift-val"><%=String.format("%.2f", morningBufSnf)%><span
+									<span class="shift-key">SNF</span><span class="shift-val"><%=String.format("%.2f", morningBufSnf)%><span
 										class="shift-unit">%</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">Amt</span> <span class="shift-val"
-										style="color: var(--teal); font-size: 14px;"> ₹<%=String.format("%.0f", morningBufAmt)%>
-									</span>
+									<span class="shift-key">Amt</span><span class="shift-val"
+										style="color: var(--teal); font-size: 14px;">&#8377;<%=String.format("%.0f", morningBufAmt)%></span>
 								</div>
 							</div>
 							<%
 							}
 							%>
-
 							<%
 							if (morningCowQty == 0 && morningBufQty == 0) {
 							%>
@@ -1169,78 +1446,71 @@ to {
 							}
 							%>
 						</div>
-
 						<!-- EVENING -->
 						<div
 							style="border-left: 0.5px solid var(--border); padding-left: 16px">
-							<div class="shift-lbl">🌙 Evening</div>
-
+							<div class="shift-lbl">&#127769; Evening</div>
 							<%
 							if (eveningCowQty > 0) {
 							%>
 							<div style="margin-bottom: 10px;">
 								<div
-									style="font-size: 10px; color: var(--teal); font-weight: 700; margin-bottom: 6px; letter-spacing: .04em;">🐄
+									style="font-size: 10px; color: var(--teal); font-weight: 700; margin-bottom: 6px; letter-spacing: .04em;">&#x1F404;
 									COW</div>
 								<div class="shift-row">
-									<span class="shift-key">Qty</span> <span class="shift-val"><%=String.format("%.2f", eveningCowQty)%><span
+									<span class="shift-key">Qty</span><span class="shift-val"><%=String.format("%.2f", eveningCowQty)%><span
 										class="shift-unit">L</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">FAT</span> <span class="shift-val"><%=String.format("%.2f", eveningCowFat)%><span
+									<span class="shift-key">FAT</span><span class="shift-val"><%=String.format("%.2f", eveningCowFat)%><span
 										class="shift-unit">%</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">SNF</span> <span class="shift-val"><%=String.format("%.2f", eveningCowSnf)%><span
+									<span class="shift-key">SNF</span><span class="shift-val"><%=String.format("%.2f", eveningCowSnf)%><span
 										class="shift-unit">%</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">Amt</span> <span class="shift-val"
-										style="color: var(--teal); font-size: 14px;"> ₹<%=String.format("%.0f", eveningCowAmt)%>
-									</span>
+									<span class="shift-key">Amt</span><span class="shift-val"
+										style="color: var(--teal); font-size: 14px;">&#8377;<%=String.format("%.0f", eveningCowAmt)%></span>
 								</div>
 							</div>
 							<%
 							}
 							%>
-
 							<%
 							if (eveningBufQty > 0) {
 							%>
 							<%
 							if (eveningCowQty > 0) {
-							%>
-							<div
+							%><div
 								style="border-top: 0.5px solid var(--border); margin: 8px 0;"></div>
 							<%
 							}
 							%>
 							<div>
 								<div
-									style="font-size: 10px; color: var(--teal-d); font-weight: 700; margin-bottom: 6px; letter-spacing: .04em;">🐃
+									style="font-size: 10px; color: var(--teal-d); font-weight: 700; margin-bottom: 6px; letter-spacing: .04em;">&#x1F403;
 									BUFFALO</div>
 								<div class="shift-row">
-									<span class="shift-key">Qty</span> <span class="shift-val"><%=String.format("%.2f", eveningBufQty)%><span
+									<span class="shift-key">Qty</span><span class="shift-val"><%=String.format("%.2f", eveningBufQty)%><span
 										class="shift-unit">L</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">FAT</span> <span class="shift-val"><%=String.format("%.2f", eveningBufFat)%><span
+									<span class="shift-key">FAT</span><span class="shift-val"><%=String.format("%.2f", eveningBufFat)%><span
 										class="shift-unit">%</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">SNF</span> <span class="shift-val"><%=String.format("%.2f", eveningBufSnf)%><span
+									<span class="shift-key">SNF</span><span class="shift-val"><%=String.format("%.2f", eveningBufSnf)%><span
 										class="shift-unit">%</span></span>
 								</div>
 								<div class="shift-row">
-									<span class="shift-key">Amt</span> <span class="shift-val"
-										style="color: var(--teal); font-size: 14px;"> ₹<%=String.format("%.0f", eveningBufAmt)%>
-									</span>
+									<span class="shift-key">Amt</span><span class="shift-val"
+										style="color: var(--teal); font-size: 14px;">&#8377;<%=String.format("%.0f", eveningBufAmt)%></span>
 								</div>
 							</div>
 							<%
 							}
 							%>
-
 							<%
 							if (eveningCowQty == 0 && eveningBufQty == 0) {
 							%>
@@ -1251,13 +1521,8 @@ to {
 							}
 							%>
 						</div>
-
 					</div>
-					<!-- /shift-grid -->
-
 					<hr class="coll-divider">
-
-					<!-- SUMMARY -->
 					<div class="summary-grid">
 						<div class="summary-tile">
 							<div class="sum-lbl">Morning Earned</div>
@@ -1272,25 +1537,19 @@ to {
 							</div>
 						</div>
 					</div>
-
-					<!-- TODAY TOTAL -->
 					<div
 						style="margin-top: 10px; background: rgba(72, 199, 162, 0.08); border: 0.5px solid var(--border); border-radius: 10px; padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;">
 						<span
 							style="font-size: 12px; color: var(--text2); font-weight: 600;">Today's
 							Total Earned</span> <span
-							style="font-size: 20px; font-weight: 600; color: var(--teal);">
-							₹<%=String.format("%.0f", todayTotal)%>
-						</span>
+							style="font-size: 20px; font-weight: 600; color: var(--teal);">&#8377;<%=String.format("%.0f", todayTotal)%></span>
 					</div>
-
 				</div>
-
 
 			</div>
 			<!-- /dashboard -->
 
-			<!-- ── FEATURES UNDER DEVELOPMENT ── -->
+			<!-- ── COMING SOON ── -->
 			<div class="screen" id="screen-coming">
 				<div class="coming-screen">
 					<div class="coming-hero">
@@ -1303,17 +1562,6 @@ to {
 					</div>
 					<div class="cf-item">
 						<div class="cf-icon teal">
-							<i class="ti ti-cash" aria-hidden="true"></i>
-						</div>
-						<div class="cf-text">
-							<h4>Latest Payment</h4>
-							<p>View payment period summaries and per-entry collection
-								details.</p>
-						</div>
-						<span class="cf-badge">In Progress</span>
-					</div>
-					<div class="cf-item">
-						<div class="cf-icon teal-d">
 							<i class="ti ti-notebook" aria-hidden="true"></i>
 						</div>
 						<div class="cf-text">
@@ -1324,7 +1572,7 @@ to {
 						<span class="cf-badge">In Progress</span>
 					</div>
 					<div class="cf-item">
-						<div class="cf-icon teal">
+						<div class="cf-icon teal-d">
 							<i class="ti ti-chart-bar" aria-hidden="true"></i>
 						</div>
 						<div class="cf-text">
@@ -1335,7 +1583,7 @@ to {
 						<span class="cf-badge">In Progress</span>
 					</div>
 					<div class="cf-item">
-						<div class="cf-icon teal-d">
+						<div class="cf-icon teal">
 							<i class="ti ti-currency-rupee" aria-hidden="true"></i>
 						</div>
 						<div class="cf-text">
@@ -1348,6 +1596,213 @@ to {
 				</div>
 			</div>
 			<!-- /coming -->
+
+			<!-- ── PAYMENT HISTORY ── -->
+			<div class="screen <%=isPaymentView ? "active" : ""%>"
+				id="screen-payment">
+				<div class="pay-screen">
+
+					<div class="pay-year-badge">
+						<i class="ti ti-calendar-stats" aria-hidden="true"></i>
+						<div>
+							<div class="pay-year-lbl">
+								<%
+								int yr = java.time.LocalDate.now().getYear();
+								int mn = java.time.LocalDate.now().getMonthValue();
+								int startYear = (mn >= 4) ? yr : yr - 1;
+								out.print(startYear + "–" + (startYear + 1));
+								%>
+							</div>
+							<div class="pay-year-hint">Tap a cycle row to see details</div>
+						</div>
+					</div>
+
+					<div class="pay-summary-bar">
+						<div class="pay-sbar-title">Total this year</div>
+						<div class="pay-sbar-grid">
+							<div class="pay-sbar-item">
+								<div class="pay-sbar-lbl">Total Earned</div>
+								<div class="pay-sbar-val">
+									&#8377;<%=String.format("%.2f", histTotalAmt)%></div>
+							</div>
+							<div class="pay-sbar-item">
+								<div class="pay-sbar-lbl">Total Milk</div>
+								<div class="pay-sbar-val"><%=String.format("%.2f", histTotalMilk)%><span
+										class="pay-sbar-unit">L</span>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="pay-list-header">
+						<span class="pay-list-title">Payment Cycles</span> <span
+							class="pay-list-count"><%=paymentList != null ? paymentList.size() : 0%>
+							cycles</span>
+					</div>
+
+					<%
+					if (paymentList == null || paymentList.isEmpty()) {
+					%>
+					<div class="pay-empty">
+						<i class="ti ti-receipt-off" aria-hidden="true"></i>
+						<p>No payment records found.</p>
+					</div>
+					<%
+					} else {
+					int ci = 0;
+					for (PaymentSummary ps : paymentList) {
+						String cardId = "phcard" + ci;
+						String detId = "phdet" + ci;
+						boolean first = (ci == 0);
+						String dotColor = first ? "var(--teal)" : "var(--teal-d)";
+						String metaLabel = first ? "Current cycle" : "Completed";
+						String monthShort = ps.getCycleStart().getMonth().getDisplayName(java.time.format.TextStyle.SHORT,
+						java.util.Locale.ENGLISH);
+					%>
+					<div class="pay-card" id="<%=cardId%>"
+						onclick="togglePH('<%=detId%>','<%=cardId%>')">
+						<div class="pay-card-row">
+							<div class="pay-dot" style="background:<%=dotColor%>"></div>
+							<div class="pay-info">
+								<div class="pay-range">
+									<%=String.format("%02d", ps.getCycleStart().getDayOfMonth())%>
+									&ndash;
+									<%=String.format("%02d", ps.getCycleEnd().getDayOfMonth())%>
+									<%=monthShort%>
+									/
+									<%=ps.getCycleStart().getYear()%>
+								</div>
+								<div class="pay-meta"><%=metaLabel%></div>
+							</div>
+							<span class="pay-amt">&#8377;<%=String.format("%.2f", ps.getTotalAmount())%></span>
+							<i class="ti ti-chevron-down pay-chev" id="chev<%=ci%>"
+								aria-hidden="true"></i>
+						</div>
+						<div class="pay-detail" id="<%=detId%>">
+							<div class="pay-detail-row">
+								<span class="pay-detail-key"><i class="ti ti-droplet"
+									aria-hidden="true"></i>Total Milk</span> <span class="pay-detail-val"><%=String.format("%.2f", ps.getTotalMilk())%>
+									L</span>
+							</div>
+							<div class="pay-detail-row">
+								<span class="pay-detail-key"><i class="ti ti-cash"
+									aria-hidden="true"></i>Total Amount</span> <span
+									class="pay-detail-val" style="color: var(--teal);">&#8377;<%=String.format("%.2f", ps.getTotalAmount())%></span>
+							</div>
+							<div class="pay-detail-row">
+								<span class="pay-detail-key"><i class="ti ti-calendar"
+									aria-hidden="true"></i>Period</span> <span class="pay-detail-val"><%=ps.getCycleStart()%>
+									&rarr; <%=ps.getCycleEnd()%></span>
+							</div>
+							<
+							<div class="pay-view-btn-row">
+								<a class="pay-view-btn"
+									href="FarmerPaymentHistoryServlet?cycleStart=<%=ps.getCycleStart()%>&cycleEnd=<%=ps.getCycleEnd()%>"
+									onclick="event.stopPropagation()"> <i class="ti ti-eye"></i>
+									View Details
+								</a>
+							</div>
+						</div>
+					</div>
+					<%
+					ci++;
+					}
+					}
+					%>
+
+				</div>
+			</div>
+			<!-- /payment -->
+
+			<!-- ── CYCLE DETAIL ── -->
+			<%
+			boolean isCycleDetailScreen = "cycleDetail".equals(request.getAttribute("currentView"));
+			List<PaymentSummary> cycleEntries2 = (List<PaymentSummary>) request.getAttribute("cycleEntries");
+			double cdTotalMilk = 0, cdTotalAmt = 0;
+			if (cycleEntries2 != null) {
+				for (PaymentSummary e : cycleEntries2) {
+					cdTotalMilk += e.getTotalMilk();
+					cdTotalAmt += e.getTotalAmount();
+				}
+			}
+			%>
+			<div class="screen <%=isCycleDetailScreen ? "active" : ""%>"
+				id="screen-cycledetail">
+				<div class="pay-screen">
+
+					<!-- Header -->
+					<div class="cycle-detail-header">
+						<a class="cycle-back-btn" href="FarmerPaymentHistoryServlet">
+							<i class="ti ti-arrow-left"></i> Back
+						</a>
+						<div>
+							<div class="cycle-detail-title">Payment Details</div>
+							<div class="cycle-detail-subtitle"><%=cycleStartAttr%>
+								&rarr;
+								<%=cycleEndAttr%></div>
+						</div>
+					</div>
+
+					<!-- Cycle total summary bar -->
+					<div class="cycle-total-bar">
+						<span class="cycle-total-lbl">Cycle Total</span> <span
+							class="cycle-total-val">&#8377;<%=String.format("%.2f", cdTotalAmt)%>
+							<span
+							style="font-size: 11px; color: var(--text2); font-weight: 500;">
+								&nbsp;|&nbsp;<%=String.format("%.2f", cdTotalMilk)%> L
+						</span>
+						</span>
+					</div>
+
+					<!-- Entry cards -->
+					<%
+					if (cycleEntries2 == null || cycleEntries2.isEmpty()) {
+					%>
+					<div class="pay-empty">
+						<i class="ti ti-receipt-off"></i>
+						<p>No entries found for this cycle.</p>
+					</div>
+					<%
+					} else {
+					for (PaymentSummary e : cycleEntries2) {
+						String shiftTime = "Morning".equalsIgnoreCase(e.getShift()) ? "06:00" : "18:00";
+					%>
+					<div class="entry-card">
+						<div class="entry-card-grid">
+							<div class="entry-field">
+								<span class="entry-lbl">Date Time</span> <span class="entry-val"><%=e.getCollectionDate()%>
+									<%=shiftTime%></span>
+							</div>
+							<div class="entry-field">
+								<span class="entry-lbl">Shift – Cattle Type</span> <span
+									class="entry-val"><%=e.getShift()%> – <%=e.getCattleType()%></span>
+							</div>
+							<div class="entry-field">
+								<span class="entry-lbl">Quantity (Ltr)</span> <span
+									class="entry-val"><%=e.getTotalMilk()%></span>
+							</div>
+							<div class="entry-field">
+								<span class="entry-lbl">Fat(%) – Snf(%)</span> <span
+									class="entry-val"><%=e.getFat()%> – <%=e.getSnf()%></span>
+							</div>
+							<div class="entry-field">
+								<span class="entry-lbl">Rate Per Ltr</span> <span
+									class="entry-val"><%=String.format("%.2f", e.getRate())%></span>
+							</div>
+							<div class="entry-field">
+								<span class="entry-lbl">Amount</span> <span
+									class="entry-val entry-amount">&#8377;<%=String.format("%.2f", e.getTotalAmount())%></span>
+							</div>
+						</div>
+					</div>
+					<%
+					}
+					}
+					%>
+
+				</div>
+			</div>
+			<!-- /cycle detail -->
 
 			<!-- ── PROFILE ── -->
 			<div class="screen" id="screen-profile">
@@ -1414,27 +1869,28 @@ to {
 		</div>
 		<!-- /content -->
 
-		<!-- BOTTOM NAV — unchanged structure -->
+		<!-- BOTTOM NAV -->
 		<div class="bottom-nav">
-			<button class="nav-btn active" id="nav-dashboard"
-				onclick="navTo('dashboard',null,'Dashboard')">
+			<button class="nav-btn <%=isPaymentView ? "" : "active"%>"
+				id="nav-dashboard" onclick="navTo('dashboard',null,'Dashboard')">
 				<i class="ti ti-home" aria-hidden="true"></i>Home
 			</button>
-			<button class="nav-btn" id="nav-coming"
-				onclick="navTo('coming',null,'Features Coming Soon')">
+			<button class="nav-btn <%=isPaymentView ? "active" : ""%>"
+				id="nav-payment"
+				onclick="window.location.href='FarmerPaymentHistoryServlet'">
 				<i class="ti ti-cash" aria-hidden="true"></i>Payment
 			</button>
 			<button class="nav-btn" id="nav-coming"
 				onclick="navTo('coming',null,'Features Coming Soon')">
 				<i class="ti ti-package" aria-hidden="true"></i>Feeds
 			</button>
-			<button class="nav-btn" id="nav-coming"
+			<button class="nav-btn" id="nav-coming2"
 				onclick="navTo('coming',null,'Features Coming Soon')">
 				<i class="ti ti-chart-bar" aria-hidden="true"></i>Report
 			</button>
-			<button class="nav-btn" id="nav-price"
-				onclick="navTo('price', null, 'Price')">
-				<i class="ti ti-tag" aria-hidden="true"></i>Price
+			<button class="nav-btn" id="nav-profile"
+				onclick="navTo('profile',null,'My Profile')">
+				<i class="ti ti-user-circle" aria-hidden="true"></i>Profile
 			</button>
 		</div>
 
@@ -1460,6 +1916,18 @@ function openDrawer() {
 function closeDrawer() {
     document.getElementById('drawer').classList.remove('open');
     document.getElementById('overlay').classList.remove('open');
+}
+function togglePH(detId, cardId) {
+    var det  = document.getElementById(detId);
+    var idx  = cardId.replace('phcard','');
+    var chev = document.getElementById('chev' + idx);
+    var isOpen = det.style.display === 'block';
+    document.querySelectorAll('[id^="phdet"]').forEach(function(d){ d.style.display='none'; });
+    document.querySelectorAll('[id^="chev"]').forEach(function(c){ c.style.transform=''; });
+    if (!isOpen) {
+        det.style.display = 'block';
+        chev.style.transform = 'rotate(180deg)';
+    }
 }
 </script>
 </body>

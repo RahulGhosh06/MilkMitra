@@ -4,30 +4,41 @@ import java.time.LocalDate;
 
 public class PaymentSummary {
 
-    private LocalDate cycleStart;
-    private LocalDate cycleEnd;
-    
+	private LocalDate cycleStart;
+	private LocalDate cycleEnd;
 
-    private double totalMilk;
-    private double totalAmount;
-    
-    private int totalFarmers;
+	private double totalMilk;
+	private double totalAmount;
 
-    public LocalDate getCycleStart() {
-        return cycleStart;
-    }
+	private int totalFarmers;
 
-    public void setCycleStart(LocalDate cycleStart) {
-        this.cycleStart = cycleStart;
-    }
+	private LocalDate collectionDate;
 
-    public LocalDate getCycleEnd() {
-        return cycleEnd;
-    }
+	private String shift;
 
-    public void setCycleEnd(LocalDate cycleEnd) {
-        this.cycleEnd = cycleEnd;
-    }
+	private String cattleType;
+
+	private double fat;
+
+	private double snf;
+
+	private double rate;
+
+	public LocalDate getCycleStart() {
+		return cycleStart;
+	}
+
+	public void setCycleStart(LocalDate cycleStart) {
+		this.cycleStart = cycleStart;
+	}
+
+	public LocalDate getCycleEnd() {
+		return cycleEnd;
+	}
+
+	public void setCycleEnd(LocalDate cycleEnd) {
+		this.cycleEnd = cycleEnd;
+	}
 
 	public double getTotalMilk() {
 		return totalMilk;
@@ -51,5 +62,53 @@ public class PaymentSummary {
 
 	public void setTotalFarmers(int totalFarmers) {
 		this.totalFarmers = totalFarmers;
+	}
+
+	public LocalDate getCollectionDate() {
+		return collectionDate;
+	}
+
+	public void setCollectionDate(LocalDate collectionDate) {
+		this.collectionDate = collectionDate;
+	}
+
+	public String getShift() {
+		return shift;
+	}
+
+	public void setShift(String shift) {
+		this.shift = shift;
+	}
+
+	public double getFat() {
+		return fat;
+	}
+
+	public void setFat(double fat) {
+		this.fat = fat;
+	}
+
+	public String getCattleType() {
+		return cattleType;
+	}
+
+	public void setCattleType(String cattleType) {
+		this.cattleType = cattleType;
+	}
+
+	public double getSnf() {
+		return snf;
+	}
+
+	public void setSnf(double snf) {
+		this.snf = snf;
+	}
+
+	public double getRate() {
+		return rate;
+	}
+
+	public void setRate(double rate) {
+		this.rate = rate;
 	}
 }
