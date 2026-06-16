@@ -17,88 +17,145 @@ import com.milkmitra.dao.PaymentDaoImpl;
 import com.milkmitra.model.Dashboard;
 import com.milkmitra.model.PaymentSummary;
 
-/**
- * Servlet implementation class AdminDashboardServlet
- */
 @WebServlet("/AdminDashboardServlet")
 public class AdminDashboardServlet extends HttpServlet {
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		HttpSession session = request.getSession();
 
-		IAdminDashboardDao dao = null;
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
 
-		IPaymentDao paymentDao = null;
+        HttpSession session = request.getSession(false);
 
-		String view = request.getParameter("view");
-		if (view == null)
-			view = "dashboard";
-		if ("farmerList".equals(view)) {
-			response.sendRedirect("FarmerListServlet?view=farmerList");
-			return;
-		}
-		request.setAttribute("currentView", view);
+        // ── Session guard ──────────────────────────────────────────────────
+        String username = (String) session.getAttribute("username");
+        String role     = (String) session.getAttribute("role");
+        if (username == null || !"ADMIN".equals(role)) {
+            response.sendRedirect("Login.jsp");
+            return;
+        }
 
-		try {
-			dao = new AdminDashboardDaoImpl();
+        // ── Resolve view ───────────────────────────────────────────────────
+        String view = request.getParameter("view");
+        if (view == null || view.isEmpty()) view = "dashboard";
 
-			paymentDao = new PaymentDaoImpl();
+        // farmerList is handled by its own servlet — redirect immediately,
+        // no DB work needed here.
+        if ("farmerList".equals(view)) {
+            response.sendRedirect("FarmerListServlet?view=farmerList");
+            return;
+        }
 
-			Dashboard dashboard = dao.getDashboardData();
+        request.setAttribute("currentView", view);
 
-			PaymentSummary cycleSummary = paymentDao.getCurrentCycleSummary();
-			
-			System.out.println(
-			        "Cycle Start : "
-			        + cycleSummary.getCycleStart());
+        // ── Route by view ──────────────────────────────────────────────────
+        switch (view) {
 
-			System.out.println(
-			        "Cycle End : "
-			        + cycleSummary.getCycleEnd());
+            // ── DASHBOARD — needs both dashboard stats and cycle summary ───
+            case "dashboard": {
+                IAdminDashboardDao dao = null;
+                IPaymentDao paymentDao = null;
+                try {
+                    dao        = new AdminDashboardDaoImpl();
+                    paymentDao = new PaymentDaoImpl();
 
-			System.out.println(
-			        "Total Farmers : "
-			        + cycleSummary.getTotalFarmers());
+                    Dashboard      dashboard    = dao.getDashboardData();
+                    PaymentSummary cycleSummary = paymentDao.getCurrentCycleSummary();
 
-			System.out.println(
-			        "Total Milk : "
-			        + cycleSummary.getTotalMilk());
+                    System.out.println("Cycle Start   : " + cycleSummary.getCycleStart());
+                    System.out.println("Cycle End     : " + cycleSummary.getCycleEnd());
+                    System.out.println("Total Farmers : " + cycleSummary.getTotalFarmers());
+                    System.out.println("Total Milk    : " + cycleSummary.getTotalMilk());
+                    System.out.println("Total Amount  : " + cycleSummary.getTotalAmount());
 
-			System.out.println(
-			        "Total Amount : "
-			        + cycleSummary.getTotalAmount());
+                    request.setAttribute("dashboard",    dashboard);
+                    request.setAttribute("cycleSummary", cycleSummary);
 
-			request.setAttribute("dashboard", dashboard);
+                    request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
 
-			request.setAttribute("cycleSummary", cycleSummary);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    session.setAttribute("errorMsg", "System Error : " + e.getMessage());
+                    response.sendRedirect("Login.jsp");
+                } finally {
+                    cleanUpDao(dao);
+                    cleanUpPaymentDao(paymentDao);
+                }
+                break;
+            }
 
-			request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+            // ── ADD FARMER — static form, no DB needed ─────────────────────
+            case "addFarmer": {
+                try {
+                    request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    session.setAttribute("errorMsg", "System Error : " + e.getMessage());
+                    response.sendRedirect("Login.jsp");
+                }
+                break;
+            }
 
-			return;
-		} catch (Exception e) {
-			e.printStackTrace();
+            // ── PAYMENTS — needs cycle summary only ────────────────────────
+            case "payments": {
+                IPaymentDao paymentDao = null;
+                try {
+                    paymentDao = new PaymentDaoImpl();
 
-			session.setAttribute("errorMsg", "System Error : " + e.getMessage());
+                    PaymentSummary cycleSummary = paymentDao.getCurrentCycleSummary();
+                    request.setAttribute("cycleSummary", cycleSummary);
 
-			response.sendRedirect("Login.jsp");
+                    request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
 
-			return;
-		} finally {
-			if (dao != null) {
-				try {
-					((AdminDashboardDaoImpl) dao).cleanUp();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			
-			if (paymentDao != null) {
-		        try {
-		            ((PaymentDaoImpl) paymentDao).cleanUp();
-		        } catch (SQLException e) {
-		            e.printStackTrace();
-		        }
-		    }
-		}
-	}
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    session.setAttribute("errorMsg", "System Error : " + e.getMessage());
+                    response.sendRedirect("Login.jsp");
+                } finally {
+                    cleanUpPaymentDao(paymentDao);
+                }
+                break;
+            }
+
+            // ── STATIC VIEWS — no DB queries needed ───────────────────────
+            // feedStore, reports, priceConfig all just render the JSP
+            case "feedStore":
+            case "reports":
+            case "priceConfig": {
+                try {
+                    request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    session.setAttribute("errorMsg", "System Error : " + e.getMessage());
+                    response.sendRedirect("Login.jsp");
+                }
+                break;
+            }
+
+            // ── UNKNOWN VIEW — fall back to dashboard ──────────────────────
+            default: {
+                response.sendRedirect("AdminDashboardServlet?view=dashboard");
+                break;
+            }
+        }
+    }
+
+    // ── Cleanup helpers ────────────────────────────────────────────────────
+    private void cleanUpDao(IAdminDashboardDao dao) {
+        if (dao != null) {
+            try {
+                ((AdminDashboardDaoImpl) dao).cleanUp();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void cleanUpPaymentDao(IPaymentDao dao) {
+        if (dao != null) {
+            try {
+                ((PaymentDaoImpl) dao).cleanUp();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }

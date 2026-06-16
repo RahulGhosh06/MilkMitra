@@ -5,13 +5,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import com.milkmitra.model.Farmer;
 import com.milkmitra.model.FarmerDashboard;
 import com.milkmitra.utils.DBConnection;
 
 public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 {
 	private Connection cn;
-	private PreparedStatement pst1, pst2, pst3, pst4, pst5;
+	private PreparedStatement pst1, pst2, pst3, pst4, pst5, pst6;
 	
 	public FarmerDashboardDaoImpl() throws Exception
 	{
@@ -83,6 +84,10 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 		    "AND shift = 'EVENING' " +
 		    "AND isActive = 1";
 		pst5 = cn.prepareStatement(sql5);
+		
+		//Get farmer details...
+		String sql6 = "select farmer_name, mobile, farmer_code, address, joining_date, bank_name, bank_account_no, ifsc_code, mpp_code, is_active from farmers where farmer_code = ?";
+		pst6 = cn.prepareStatement(sql6);
 	}
 
 	@Override
@@ -154,6 +159,33 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 	        }
 	    }
 	    return fDashboard;
+	}
+	
+	@Override
+	public Farmer getFarmerProfile(String farmerCode) throws SQLException {
+		// TODO Auto-generated method stub
+		
+		Farmer farmer = new Farmer();
+		pst6.setString(1, farmerCode);
+		
+		try(ResultSet rs = pst6.executeQuery())
+		{
+			if(rs.next())
+			{
+				farmer.setFarmerName(rs.getString("farmer_name"));
+			    farmer.setMobile(rs.getString("mobile"));
+			    farmer.setFarmerCode(rs.getString("farmer_code"));
+			    farmer.setAddress(rs.getString("address"));
+			    farmer.setJoiningDate(rs.getDate("joining_date").toLocalDate());
+			    farmer.setBankName(rs.getString("bank_name"));
+			    farmer.setAccountNo(rs.getString("bank_account_no"));
+			    farmer.setIfscCode(rs.getString("ifsc_code"));
+			    farmer.setMppCode(rs.getString("mpp_code"));
+			    farmer.setActive(rs.getBoolean("is_active"));
+				
+			}
+		}
+		return farmer;
 	}
 	
 	public void cleanUp() throws SQLException

@@ -92,15 +92,9 @@ public class Farmer
 		return accountHolderName;
 	}
 
-	public void setAccountHolderName(String accountHolderName) {
+	public void setAccountHolderName(String accountHolderName)
+	{
 		this.accountHolderName = accountHolderName;
-	}
-
-	public String getAccountNo() {
-		return accountNo;
-	}
-	public void setAccountNo(String accountNo) {
-		this.accountNo = accountNo;
 	}
 	public String getIfscCode() {
 		return ifscCode;
@@ -136,6 +130,12 @@ public class Farmer
 		this.isActive = isActive;
 	}
 
-	
+	public String getAccountNo() {
+		return accountNo;
+	}
+
+	public void setAccountNo(String accountNo) {
+		this.accountNo = accountNo;
+	}
 		
 }

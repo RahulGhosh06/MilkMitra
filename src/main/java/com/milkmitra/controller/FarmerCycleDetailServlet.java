@@ -35,6 +35,7 @@ public class FarmerCycleDetailServlet extends HttpServlet {
 			LocalDate cycleEnd = LocalDate.parse(endStr);
 
 			dao = new PaymentDaoImpl();
+
 			List<PaymentSummary> entries = dao.getCycleEntries(farmerCode, cycleStart, cycleEnd);
 
 			request.setAttribute("cycleEntries", entries);

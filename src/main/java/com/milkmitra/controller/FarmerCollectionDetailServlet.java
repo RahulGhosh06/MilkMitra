@@ -20,7 +20,8 @@ import com.milkmitra.model.Collection;
  * Servlet implementation class FarmerCollectionDetailServlet
  */
 @WebServlet("/FarmerCollectionDetailServlet")
-public class FarmerCollectionDetailServlet extends HttpServlet {
+public class FarmerCollectionDetailServlet extends HttpServlet
+{
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		System.out.println("Farmer Collection Details Servlet Called");

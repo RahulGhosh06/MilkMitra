@@ -14,6 +14,7 @@ import com.milkmitra.dao.FarmerDashboardDaoImpl;
 import com.milkmitra.dao.IFarmerDashboardDao;
 import com.milkmitra.dao.IPaymentDao;
 import com.milkmitra.dao.PaymentDaoImpl;
+import com.milkmitra.model.Farmer;
 import com.milkmitra.model.FarmerDashboard;
 import com.milkmitra.model.PaymentSummary;
 
@@ -28,6 +29,7 @@ public class FarmerDashboardServlet extends HttpServlet {
 
         IFarmerDashboardDao dao = null;
         IPaymentDao paymentDao = null;
+        
 
         String view = request.getParameter("view");
 
@@ -38,17 +40,17 @@ public class FarmerDashboardServlet extends HttpServlet {
 
         try {
 
-        	String farmerCode =
-        	        (String)session.getAttribute("farmerCode");
+        	String farmerCode = (String)session.getAttribute("farmerCode");
             // Verify later if username actually stores F001
             
             System.out.println("Farmer Code = " + farmerCode);
 
             dao = new FarmerDashboardDaoImpl();
-            paymentDao = new PaymentDaoImpl();
+            paymentDao = new PaymentDaoImpl(); 
 
             FarmerDashboard dashboard = dao.getFarmerDashboardData(farmerCode);
             PaymentSummary cycleSummary =paymentDao.getCurrentCycleSummary(farmerCode);
+            Farmer farmer = dao.getFarmerProfile(farmerCode);
 
             request.setAttribute(
                     "dashboard",
@@ -56,6 +58,8 @@ public class FarmerDashboardServlet extends HttpServlet {
             request.setAttribute(
                     "cycleSummary",
                     cycleSummary);
+            
+            request.setAttribute("farmerProfile", farmer);
 
             System.out.println(
                     "Today Milk : "

@@ -56,8 +56,8 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 				+ "    sum(case when is_active = 0 then 1 else 0 end) inactiveFarmers\r\n"
 				+ "from farmers;";
 		pst4 = cn.prepareStatement(sql4);
-				
-				
+		
+		//Farnmer Details...
 		
 	}
 
@@ -146,6 +146,9 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 	    }
 
 	    return dashboard;
+	    
+	    
+	    
 	}
 	
 	public void cleanUp() throws SQLException
@@ -161,6 +164,7 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 
 	    if(pst4 != null)
 	        pst4.close();
+	   
 
 	    if(cn != null)
 	        cn.close();
