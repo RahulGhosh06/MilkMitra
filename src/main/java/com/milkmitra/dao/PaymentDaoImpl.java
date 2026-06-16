@@ -41,7 +41,7 @@ public class PaymentDaoImpl implements IPaymentDao {
 		pst3 = cn.prepareStatement(sql3); // ..... to be continued
 
 		// 4. Payment Cycle smart cards view
-		String sql4 = "SELECT collectionDate, shift, cattleType, quantity, fat, snf, rate, amount "
+		String sql4 = "SELECT collectionDate, shift, milkType, quantity, fat, snf, rate, amount "
 				+ "FROM milkcollection " + "WHERE farmerCode = ? AND isActive = 1 "
 				+ "AND collectionDate BETWEEN ? AND ? " + "ORDER BY collectionDate ASC, shift ASC";
 		pst4 = cn.prepareStatement(sql4);
@@ -177,7 +177,7 @@ public class PaymentDaoImpl implements IPaymentDao {
 	            PaymentSummary e = new PaymentSummary();
 	            e.setCollectionDate(rs.getDate("collectionDate").toLocalDate());
 	            e.setShift(rs.getString("shift"));
-	            e.setCattleType(rs.getString("milkType"));
+	            e.setMilkType(rs.getString("milkType"));
 	            e.setTotalMilk(rs.getDouble("quantity"));
 	            e.setFat(rs.getDouble("fat"));
 	            e.setSnf(rs.getDouble("snf"));

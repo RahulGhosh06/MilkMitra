@@ -88,12 +88,12 @@ public class PaymentSummary {
 		this.fat = fat;
 	}
 
-	public String getCattleType() {
+	public String getMilkType() {
 		return milkType;
 	}
 
-	public void setCattleType(String cattleType) {
-		this.milkType = cattleType;
+	public void setMilkType(String milkType) {
+		this.milkType = milkType;
 	}
 
 	public double getSnf() {
@@ -111,4 +111,5 @@ public class PaymentSummary {
 	public void setRate(double rate) {
 		this.rate = rate;
 	}
+
 }

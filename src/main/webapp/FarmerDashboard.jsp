@@ -1775,7 +1775,7 @@ to {
 							</div>
 							<div class="entry-field">
 								<span class="entry-lbl">Shift – Cattle Type</span> <span
-									class="entry-val"><%=e.getShift()%> – <%=e.getCattleType()%></span>
+									class="entry-val"><%=e.getShift()%> – <%=e.getMilkType()%></span>
 							</div>
 							<div class="entry-field">
 								<span class="entry-lbl">Quantity (Ltr)</span> <span
