@@ -16,7 +16,7 @@ public class PaymentSummary {
 
 	private String shift;
 
-	private String cattleType;
+	private String milkType;
 
 	private double fat;
 
@@ -89,11 +89,11 @@ public class PaymentSummary {
 	}
 
 	public String getCattleType() {
-		return cattleType;
+		return milkType;
 	}
 
 	public void setCattleType(String cattleType) {
-		this.cattleType = cattleType;
+		this.milkType = cattleType;
 	}
 
 	public double getSnf() {

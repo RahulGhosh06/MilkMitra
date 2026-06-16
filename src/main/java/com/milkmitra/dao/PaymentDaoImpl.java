@@ -177,7 +177,7 @@ public class PaymentDaoImpl implements IPaymentDao {
 	            PaymentSummary e = new PaymentSummary();
 	            e.setCollectionDate(rs.getDate("collectionDate").toLocalDate());
 	            e.setShift(rs.getString("shift"));
-	            e.setCattleType(rs.getString("cattleType"));
+	            e.setCattleType(rs.getString("milkType"));
 	            e.setTotalMilk(rs.getDouble("quantity"));
 	            e.setFat(rs.getDouble("fat"));
 	            e.setSnf(rs.getDouble("snf"));
