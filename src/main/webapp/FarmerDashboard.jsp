@@ -1562,7 +1562,7 @@ to {
 						<i class="ti ti-rocket" aria-hidden="true"></i>
 						<h2>Features Under Development</h2>
 						<p>
-							Our team is actively building these features.<br>They will
+							Actively building these features.<br>They will
 							be available in an upcoming release.
 						</p>
 					</div>
@@ -1594,7 +1594,7 @@ to {
 						</div>
 						<div class="cf-text">
 							<h4>Milk Price Checker</h4>
-							<p>Compare rates across cooperatives and private dairies by
+							<p>Compare rates of different dairy companies by
 								FAT/SNF.</p>
 						</div>
 						<span class="cf-badge">In Progress</span>
