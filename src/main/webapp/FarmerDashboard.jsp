@@ -1787,7 +1787,7 @@ to {
 							</div>
 							<div class="entry-field">
 								<span class="entry-lbl">Rate Per Ltr</span> <span
-									class="entry-val"><%=String.format("%.2f", e.getRate())%></span>
+									class="entry-val"><%=String.format("%.2f", e.getRatePerLtr())%></span>
 							</div>
 							<div class="entry-field">
 								<span class="entry-lbl">Amount</span> <span

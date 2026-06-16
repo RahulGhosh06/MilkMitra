@@ -181,7 +181,7 @@ public class PaymentDaoImpl implements IPaymentDao {
 	            e.setTotalMilk(rs.getDouble("quantity"));
 	            e.setFat(rs.getDouble("fat"));
 	            e.setSnf(rs.getDouble("snf"));
-	            e.setRate(rs.getDouble("rate"));
+	            e.setRatePerLtr(rs.getDouble("ratePerLtr"));
 	            e.setTotalAmount(rs.getDouble("amount"));
 	            list.add(e);
 	        }

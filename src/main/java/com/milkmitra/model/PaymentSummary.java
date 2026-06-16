@@ -22,7 +22,7 @@ public class PaymentSummary {
 
 	private double snf;
 
-	private double rate;
+	private double ratePerLtr;
 
 	public LocalDate getCycleStart() {
 		return cycleStart;
@@ -104,12 +104,12 @@ public class PaymentSummary {
 		this.snf = snf;
 	}
 
-	public double getRate() {
-		return rate;
+	public double getRatePerLtr() {
+		return ratePerLtr;
 	}
 
-	public void setRate(double rate) {
-		this.rate = rate;
+	public void setRatePerLtr(double ratePerLtr) {
+		this.ratePerLtr = ratePerLtr;
 	}
 
 }
