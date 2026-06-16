@@ -46,7 +46,7 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 				+ "    IFNULL(SUM(amount), 0) AS todayEarning\r\n"
 				+ "FROM milkcollection\r\n"
 				+ "WHERE farmerCode = ?\r\n"
-				+ "AND collectionDate = CURDATE()\r\n"
+				+ "AND collectionDate = ? \r\n"
 				+ "AND isActive = 1;";
 		
 		pst3 = cn.prepareStatement(sql3);
@@ -63,7 +63,7 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 		    "IFNULL(SUM(CASE WHEN milkType='B' THEN amount ELSE 0 END),0)   AS morningBufAmount " +
 		    "FROM milkcollection " +
 		    "WHERE farmerCode = ? " +
-		    "AND collectionDate = CURDATE() " +
+		    "AND collectionDate = ? " +
 		    "AND shift = 'MORNING' " +
 		    "AND isActive = 1";
 		pst4 = cn.prepareStatement(sql4);
@@ -80,7 +80,7 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 		    "IFNULL(SUM(CASE WHEN milkType='B' THEN amount ELSE 0 END),0)   AS eveningBufAmount " +
 		    "FROM milkcollection " +
 		    "WHERE farmerCode = ? " +
-		    "AND collectionDate = CURDATE() " +
+		    "AND collectionDate = ? " +
 		    "AND shift = 'EVENING' " +
 		    "AND isActive = 1";
 		pst5 = cn.prepareStatement(sql5);
@@ -93,6 +93,9 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 	@Override
 	public FarmerDashboard getFarmerDashboardData(String farmerCode) throws SQLException
 	{
+		java.time.LocalDate today = java.time.LocalDate.now(
+			    java.time.ZoneId.of("Asia/Kolkata"));
+			java.sql.Date sqlToday = java.sql.Date.valueOf(today);
 
 	    FarmerDashboard fDashboard = new FarmerDashboard();
 	    
@@ -116,6 +119,7 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 
 	    // Today's Total Milk & Earnings
 	    pst3.setString(1, farmerCode);
+	    pst3.setDate(2, sqlToday);
 
 	    try(ResultSet rs = pst3.executeQuery()) {
 
@@ -130,7 +134,8 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 	    }
 
 	 // Morning shift
-	    pst4.setString(1, farmerCode);  // ADD THIS LINE
+	    pst4.setString(1, farmerCode);
+	    pst4.setDate(2, sqlToday);
 	    try (ResultSet rs = pst4.executeQuery()) {
 	        if (rs.next()) {
 	            fDashboard.setMorningCowQty(rs.getDouble("morningCowQty"));
@@ -145,7 +150,8 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 	    }
 
 	    // Evening shift
-	    pst5.setString(1, farmerCode);  // ADD THIS LINE
+	    pst5.setString(1, farmerCode);
+	    pst5.setDate(2, sqlToday);
 	    try (ResultSet rs = pst5.executeQuery()) {
 	        if (rs.next()) {
 	            fDashboard.setEveningCowQty(rs.getDouble("eveningCowQty"));
@@ -167,6 +173,7 @@ public class FarmerDashboardDaoImpl implements IFarmerDashboardDao
 		
 		Farmer farmer = new Farmer();
 		pst6.setString(1, farmerCode);
+		
 		
 		try(ResultSet rs = pst6.executeQuery())
 		{

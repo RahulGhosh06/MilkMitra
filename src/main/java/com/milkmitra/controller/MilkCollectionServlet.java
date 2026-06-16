@@ -65,7 +65,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	    return;
     	}
     	
-    	LocalDate collectionDate = LocalDate.now();
+    	LocalDate collectionDate = LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")); // ✅
     	double ratePerLtr = amount / quantity;
     	String milkType;
     	if(fat >= 6.0)
@@ -107,7 +107,7 @@ public class MilkCollectionServlet extends HttpServlet {
     	}
     	String shift;
 
-    	if(LocalTime.now().getHour() < 12)
+    	if(LocalTime.now(java.time.ZoneId.of("Asia/Kolkata")).getHour() < 12) 
     	{
     	    shift = "MORNING";
     	}

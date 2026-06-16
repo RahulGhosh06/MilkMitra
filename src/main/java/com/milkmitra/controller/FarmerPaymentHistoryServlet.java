@@ -47,14 +47,14 @@ public class FarmerPaymentHistoryServlet extends FarmerBaseServlet {
  
             if (cycleStartStr != null && cycleEndStr != null) {
  
-                // ── CYCLE DETAIL VIEW ──────────────────────────────────────
+                
                 LocalDate cycleStart = LocalDate.parse(cycleStartStr);
                 LocalDate cycleEnd   = LocalDate.parse(cycleEndStr);
  
                 List<PaymentSummary> cycleEntries =
                         paymentDao.getCycleEntries(farmerCode, cycleStart, cycleEnd);
  
-                // cycleSummary is still needed by the JSP header stat tiles
+               
                 PaymentSummary cycleSummary =
                         paymentDao.getCurrentCycleSummary(farmerCode);
  
