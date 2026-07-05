@@ -18,7 +18,7 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 			+ "    avg(fat) avgFat,\r\n"
 			+ "    avg(snf) avgSnf\r\n"
 			+ "from milkcollection\r\n"
-			+ "where collectionDate = curdate()\r\n"
+			+ "where collectionDate = ?\r\n"
 			+ "and isActive = 1;";
 
 	private static final String SQL_SHIFT_COUNT =
@@ -26,7 +26,7 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 			+ "    shift,\r\n"
 			+ "    count(*) entries\r\n"
 			+ "from milkcollection\r\n"
-			+ "where collectionDate = curdate()\r\n"
+			+ "where collectionDate = ?\r\n"
 			+ "and isActive = 1\r\n"
 			+ "group by shift;";
 
@@ -35,7 +35,7 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 			+ "    milkType,\r\n"
 			+ "    sum(quantity) qty\r\n"
 			+ "from milkcollection\r\n"
-			+ "where collectionDate = curdate()\r\n"
+			+ "where collectionDate = ?\r\n"
 			+ "and isActive = 1\r\n"
 			+ "group by milkType;";
 
@@ -56,56 +56,69 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 	{
 	    Dashboard dashboard = new Dashboard();
 
+	    // Use the app's IST calendar date, NOT the DB server's own clock
+	    // (curdate() relies on the MySQL server's timezone, which is UTC
+	    // on Railway — that caused "today" to be wrong for ~5.5 hours
+	    // around midnight IST).
+	    java.sql.Date todayIst = java.sql.Date.valueOf(
+	            java.time.LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")));
+
 	    try (Connection cn = DBConnection.getConnection()) {
 
 	        // Today's Summary
-	        try (PreparedStatement pst1 = cn.prepareStatement(SQL_TODAY_SUMMARY);
-	             ResultSet rs = pst1.executeQuery())
-	        {
-	            if(rs.next())
-	            {
-	                dashboard.setTodayEntries(rs.getInt("todayEntries"));
-	                dashboard.setTodayTotalLtr(rs.getDouble("totalLtr"));
-	                dashboard.setTodayValue(rs.getDouble("totalValue"));
-	                dashboard.setAvgFat(rs.getDouble("avgFat"));
-	                dashboard.setAvgSnf(rs.getDouble("avgSnf"));
+	        try (PreparedStatement pst1 = cn.prepareStatement(SQL_TODAY_SUMMARY)) {
+	            pst1.setDate(1, todayIst);
+
+	            try (ResultSet rs = pst1.executeQuery()) {
+	                if(rs.next())
+	                {
+	                    dashboard.setTodayEntries(rs.getInt("todayEntries"));
+	                    dashboard.setTodayTotalLtr(rs.getDouble("totalLtr"));
+	                    dashboard.setTodayValue(rs.getDouble("totalValue"));
+	                    dashboard.setAvgFat(rs.getDouble("avgFat"));
+	                    dashboard.setAvgSnf(rs.getDouble("avgSnf"));
+	                }
 	            }
 	        }
 
 	        // Morning / Evening Entries
-	        try (PreparedStatement pst2 = cn.prepareStatement(SQL_SHIFT_COUNT);
-	             ResultSet rs = pst2.executeQuery())
-	        {
-	            while(rs.next())
-	            {
-	                String shift = rs.getString("shift");
+	        try (PreparedStatement pst2 = cn.prepareStatement(SQL_SHIFT_COUNT)) {
+	            pst2.setDate(1, todayIst);
 
-	                if("Morning".equalsIgnoreCase(shift))
+	            try (ResultSet rs = pst2.executeQuery()) {
+	                while(rs.next())
 	                {
-	                    dashboard.setMorningEntries(rs.getInt("entries"));
-	                }
-	                else if("Evening".equalsIgnoreCase(shift))
-	                {
-	                    dashboard.setEveningEntries(rs.getInt("entries"));
+	                    String shift = rs.getString("shift");
+
+	                    if("Morning".equalsIgnoreCase(shift))
+	                    {
+	                        dashboard.setMorningEntries(rs.getInt("entries"));
+	                    }
+	                    else if("Evening".equalsIgnoreCase(shift))
+	                    {
+	                        dashboard.setEveningEntries(rs.getInt("entries"));
+	                    }
 	                }
 	            }
 	        }
 
 	        // Cow / Buffalo Milk
-	        try (PreparedStatement pst3 = cn.prepareStatement(SQL_MILKTYPE_QTY);
-	             ResultSet rs = pst3.executeQuery())
-	        {
-	            while(rs.next())
-	            {
-	                String milkType = rs.getString("milkType");
+	        try (PreparedStatement pst3 = cn.prepareStatement(SQL_MILKTYPE_QTY)) {
+	            pst3.setDate(1, todayIst);
 
-	                if("c".equalsIgnoreCase(milkType))
+	            try (ResultSet rs = pst3.executeQuery()) {
+	                while(rs.next())
 	                {
-	                    dashboard.setTodayCowLtr(rs.getDouble("qty"));
-	                }
-	                else if("B".equalsIgnoreCase(milkType))
-	                {
-	                    dashboard.setTodayBufLtr(rs.getDouble("qty"));
+	                    String milkType = rs.getString("milkType");
+
+	                    if("c".equalsIgnoreCase(milkType))
+	                    {
+	                        dashboard.setTodayCowLtr(rs.getDouble("qty"));
+	                    }
+	                    else if("B".equalsIgnoreCase(milkType))
+	                    {
+	                        dashboard.setTodayBufLtr(rs.getDouble("qty"));
+	                    }
 	                }
 	            }
 	        }
@@ -127,9 +140,8 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 	}
 
 	public void cleanUp() {
-		// No-op now: the connection above closes itself via try-with-resources
-		// right after getDashboardData() finishes. Kept so existing servlet
-		// calls to dao.cleanUp() don't break.
+		// No-op: try-with-resources closes everything immediately after
+		// getDashboardData() finishes.
 	}
 
 }
