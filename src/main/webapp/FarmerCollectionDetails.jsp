@@ -50,7 +50,8 @@
     double avgFat = cnt==0 ? 0 : fatSum/cnt;
     double avgSnf = cnt==0 ? 0 : snfSum/cnt;
 
-    java.text.SimpleDateFormat timeFmt = new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm");
+   java.text.SimpleDateFormat timeFmt = new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm");
+   timeFmt.setTimeZone(java.util.TimeZone.getTimeZone("Asia/Kolkata"));
 %>
 <!DOCTYPE html>
 <html lang="en">
