@@ -53,8 +53,7 @@ int pendingFeedOrders = 0;
 double pendingPayments = 0.0;
 int lowStockItems = 0;
 
-String todayStr = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
-
+String todayStr = LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")).format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
 /* ── Farmer list data (farmerList / viewFarmer views) ── */
 List<Farmer> farmers = (List<Farmer>) request.getAttribute("farmers");
 int farmerTotal = (farmers != null) ? farmers.size() : 0;

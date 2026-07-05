@@ -69,8 +69,8 @@
     int    drRows=0;
     if(reports!=null){ drRows=reports.size(); for(Report r:reports){ drTotalLtr+=r.getTotalQty(); drTotalAmt+=r.getTotalAmount(); } }
 
-    String todayStr   = LocalDate.now().format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy"));
-    String todayShort = LocalDate.now().format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
+    String todayStr   = LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")).format(DateTimeFormatter.ofPattern("EEEE, dd MMMM yyyy"));
+    String todayShort = LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")).format(DateTimeFormatter.ofPattern("dd MMM yyyy"));
 
     boolean isMorning = "morning".equals(currentView);
     boolean isEvening = "evening".equals(currentView);
@@ -1152,7 +1152,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
                         <td class="num emerald">₹<%= String.format("%.2f",c.getAmount()) %></td>
                         <td class="idx-col">
                             <% if(c.getCreatedAt()!=null){ %>
-                                <%= new java.text.SimpleDateFormat("hh:mm a").format(c.getCreatedAt()) %>
+                                <%= new java.text.SimpleDateFormat("hh:mm a") 								  		       						{{ setTimeZone(java.util.TimeZone.getTimeZone("Asia/Kolkata")); }}.format(c.getCreatedAt()) %>
                             <% } else { %>—<% } %>
                         </td>
                     </tr>

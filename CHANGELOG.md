@@ -1,3 +1,15 @@
+\## 2026-07-06 (2)
+
+\- Fixed timezone bug: date/time displays used server default timezone
+
+&#x20; instead of explicit Asia/Kolkata, causing wrong dates/times to show
+
+&#x20; on cloud (UTC server) while working correctly on local (IST machine)
+
+\- Fixed in AdminDashboard.jsp, milkcollectionReport.jsp, FarmerCollectionDetails.jsp
+
+
+
 \## 2026-07-06
 
 \- Replaced single shared static DB connection with HikariCP connection pool
