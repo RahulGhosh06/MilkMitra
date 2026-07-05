@@ -141,21 +141,13 @@ public class AdminDashboardServlet extends HttpServlet {
     // ── Cleanup helpers ────────────────────────────────────────────────────
     private void cleanUpDao(IAdminDashboardDao dao) {
         if (dao != null) {
-            try {
                 ((AdminDashboardDaoImpl) dao).cleanUp();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 
     private void cleanUpPaymentDao(IPaymentDao dao) {
         if (dao != null) {
-            try {
                 ((PaymentDaoImpl) dao).cleanUp();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
         }
     }
 }

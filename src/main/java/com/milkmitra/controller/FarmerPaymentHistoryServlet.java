@@ -94,11 +94,7 @@ public class FarmerPaymentHistoryServlet extends FarmerBaseServlet {
  
         } finally {
             if (paymentDao != null) {
-                try {
                     ((PaymentDaoImpl) paymentDao).cleanUp();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }

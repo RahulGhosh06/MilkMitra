@@ -15,36 +15,29 @@ import com.milkmitra.utils.DBConnection;
 import com.milkmitra.utils.PaymentCycleUtil;
 
 public class PaymentDaoImpl implements IPaymentDao {
-	private Connection cn;
-	private PreparedStatement pst1, pst2, pst3, pst4;
 
-	public PaymentDaoImpl() throws Exception {
-		cn = DBConnection.openConnection();
+	private static final String SQL_ADMIN_CYCLE_SUMMARY =
+			"SELECT\r\n" + "COUNT(DISTINCT farmerCode) AS totalFarmers,\r\n"
+			+ "IFNULL(SUM(quantity),0) AS totalMilk,\r\n" + "IFNULL(SUM(amount),0) AS totalAmount\r\n"
+			+ "FROM milkcollection\r\n" + "WHERE collectionDate BETWEEN ? AND ?\r\n" + "AND isActive = 1";
 
-		// 1. For Admin
-		String sql1 = "SELECT\r\n" + "COUNT(DISTINCT farmerCode) AS totalFarmers,\r\n"
-				+ "IFNULL(SUM(quantity),0) AS totalMilk,\r\n" + "IFNULL(SUM(amount),0) AS totalAmount\r\n"
-				+ "FROM milkcollection\r\n" + "WHERE collectionDate BETWEEN ? AND ?\r\n" + "AND isActive = 1";
-		pst1 = cn.prepareStatement(sql1);
+	private static final String SQL_FARMER_CYCLE_SUMMARY =
+			"SELECT " + "IFNULL(SUM(quantity),0) AS totalMilk, " + "IFNULL(SUM(amount),0) AS totalAmount "
+			+ "FROM milkcollection " + "WHERE farmerCode = ? " + "AND collectionDate BETWEEN ? AND ? "
+			+ "AND isActive = 1";
 
-		// 2. For Farmer
-		String sql2 = "SELECT " + "IFNULL(SUM(quantity),0) AS totalMilk, " + "IFNULL(SUM(amount),0) AS totalAmount "
-				+ "FROM milkcollection " + "WHERE farmerCode = ? " + "AND collectionDate BETWEEN ? AND ? "
-				+ "AND isActive = 1";
+	private static final String SQL_PAYMENT_HISTORY =
+			"SELECT collectionDate, quantity, amount " + "FROM milkcollection " + "WHERE farmerCode=? "
+			+ "AND isActive=1 " + "ORDER BY collectionDate DESC";
 
-		pst2 = cn.prepareStatement(sql2);
+	private static final String SQL_CYCLE_ENTRIES =
+			"SELECT collectionDate, shift, milkType, quantity, fat, snf, ratePerLtr, amount "
+			+ "FROM milkcollection " + "WHERE farmerCode = ? AND isActive = 1 "
+			+ "AND collectionDate BETWEEN ? AND ? " + "ORDER BY collectionDate ASC, shift ASC";
 
-		// 3. Payment Cycle History
-		String sql3 = "SELECT collectionDate, quantity, amount " + "FROM milkcollection " + "WHERE farmerCode=? "
-				+ "AND isActive=1 " + "ORDER BY collectionDate DESC";
-
-		pst3 = cn.prepareStatement(sql3); // ..... to be continued
-
-		// 4. Payment Cycle smart cards view
-		String sql4 = "SELECT collectionDate, shift, milkType, quantity, fat, snf, ratePerLtr, amount "
-				+ "FROM milkcollection " + "WHERE farmerCode = ? AND isActive = 1 "
-				+ "AND collectionDate BETWEEN ? AND ? " + "ORDER BY collectionDate ASC, shift ASC";
-		pst4 = cn.prepareStatement(sql4);
+	public PaymentDaoImpl() {
+		// Nothing held here now — each method below borrows its own
+		// connection from the pool for just the duration of that call.
 	}
 
 	@Override
@@ -52,28 +45,24 @@ public class PaymentDaoImpl implements IPaymentDao {
 
 		PaymentSummary summary = PaymentCycleUtil.getCurrentCycle();
 
-		pst1.setDate(1, java.sql.Date.valueOf(summary.getCycleStart()));
+		try (Connection cn = DBConnection.getConnection();
+			 PreparedStatement pst1 = cn.prepareStatement(SQL_ADMIN_CYCLE_SUMMARY)) {
 
-		pst1.setDate(2, java.sql.Date.valueOf(summary.getCycleEnd()));
+			pst1.setDate(1, java.sql.Date.valueOf(summary.getCycleStart()));
+			pst1.setDate(2, java.sql.Date.valueOf(summary.getCycleEnd()));
 
-		try (ResultSet rs = pst1.executeQuery()) {
-
-			if (rs.next()) {
-
-				summary.setTotalFarmers(rs.getInt("totalFarmers"));
-
-				summary.setTotalMilk(rs.getDouble("totalMilk"));
-
-				summary.setTotalAmount(rs.getDouble("totalAmount"));
+			try (ResultSet rs = pst1.executeQuery()) {
+				if (rs.next()) {
+					summary.setTotalFarmers(rs.getInt("totalFarmers"));
+					summary.setTotalMilk(rs.getDouble("totalMilk"));
+					summary.setTotalAmount(rs.getDouble("totalAmount"));
+				}
 			}
 		}
 
 		System.out.println("Current Cycle : " + summary.getCycleStart() + " -> " + summary.getCycleEnd());
-
 		System.out.println("Farmers : " + summary.getTotalFarmers());
-
 		System.out.println("Milk : " + summary.getTotalMilk());
-
 		System.out.println("Amount : " + summary.getTotalAmount());
 
 		return summary;
@@ -84,19 +73,18 @@ public class PaymentDaoImpl implements IPaymentDao {
 
 		PaymentSummary summary = PaymentCycleUtil.getCurrentCycle();
 
-		pst2.setString(1, farmerCode);
+		try (Connection cn = DBConnection.getConnection();
+			 PreparedStatement pst2 = cn.prepareStatement(SQL_FARMER_CYCLE_SUMMARY)) {
 
-		pst2.setDate(2, java.sql.Date.valueOf(summary.getCycleStart()));
+			pst2.setString(1, farmerCode);
+			pst2.setDate(2, java.sql.Date.valueOf(summary.getCycleStart()));
+			pst2.setDate(3, java.sql.Date.valueOf(summary.getCycleEnd()));
 
-		pst2.setDate(3, java.sql.Date.valueOf(summary.getCycleEnd()));
-
-		try (ResultSet rs = pst2.executeQuery()) {
-
-			if (rs.next()) {
-
-				summary.setTotalMilk(rs.getDouble("totalMilk"));
-
-				summary.setTotalAmount(rs.getDouble("totalAmount"));
+			try (ResultSet rs = pst2.executeQuery()) {
+				if (rs.next()) {
+					summary.setTotalMilk(rs.getDouble("totalMilk"));
+					summary.setTotalAmount(rs.getDouble("totalAmount"));
+				}
 			}
 		}
 
@@ -107,57 +95,47 @@ public class PaymentDaoImpl implements IPaymentDao {
 	public List<PaymentSummary> getPaymentHistory(String farmerCode) throws SQLException {
 
 		List<PaymentSummary> paymentList = new ArrayList<>();
-
 		Map<String, PaymentSummary> cycleMap = new LinkedHashMap<>();
 
-		pst3.setString(1, farmerCode);
+		try (Connection cn = DBConnection.getConnection();
+			 PreparedStatement pst3 = cn.prepareStatement(SQL_PAYMENT_HISTORY)) {
 
-		try (ResultSet rs = pst3.executeQuery()) {
+			pst3.setString(1, farmerCode);
 
-			while (rs.next()) {
+			try (ResultSet rs = pst3.executeQuery()) {
+				while (rs.next()) {
 
-				LocalDate collectionDate = rs.getDate("collectionDate").toLocalDate();
+					LocalDate collectionDate = rs.getDate("collectionDate").toLocalDate();
 
-				LocalDate cycleStart;
-				LocalDate cycleEnd;
+					LocalDate cycleStart;
+					LocalDate cycleEnd;
 
-				int day = collectionDate.getDayOfMonth();
+					int day = collectionDate.getDayOfMonth();
 
-				if (day >= 1 && day <= 10) {
+					if (day >= 1 && day <= 10) {
+						cycleStart = collectionDate.withDayOfMonth(1);
+						cycleEnd = collectionDate.withDayOfMonth(10);
+					} else if (day >= 11 && day <= 20) {
+						cycleStart = collectionDate.withDayOfMonth(11);
+						cycleEnd = collectionDate.withDayOfMonth(20);
+					} else {
+						cycleStart = collectionDate.withDayOfMonth(21);
+						cycleEnd = collectionDate.withDayOfMonth(collectionDate.lengthOfMonth());
+					}
 
-					cycleStart = collectionDate.withDayOfMonth(1);
+					String key = cycleStart + "_" + cycleEnd;
 
-					cycleEnd = collectionDate.withDayOfMonth(10);
-				} else if (day >= 11 && day <= 20) {
+					if (!cycleMap.containsKey(key)) {
+						PaymentSummary summary = new PaymentSummary();
+						summary.setCycleStart(cycleStart);
+						summary.setCycleEnd(cycleEnd);
+						cycleMap.put(key, summary);
+					}
 
-					cycleStart = collectionDate.withDayOfMonth(11);
-
-					cycleEnd = collectionDate.withDayOfMonth(20);
-				} else {
-
-					cycleStart = collectionDate.withDayOfMonth(21);
-
-					cycleEnd = collectionDate.withDayOfMonth(collectionDate.lengthOfMonth());
+					PaymentSummary summary = cycleMap.get(key);
+					summary.setTotalMilk(summary.getTotalMilk() + rs.getDouble("quantity"));
+					summary.setTotalAmount(summary.getTotalAmount() + rs.getDouble("amount"));
 				}
-
-				String key = cycleStart + "_" + cycleEnd;
-
-				if (!cycleMap.containsKey(key)) {
-
-					PaymentSummary summary = new PaymentSummary();
-
-					summary.setCycleStart(cycleStart);
-
-					summary.setCycleEnd(cycleEnd);
-
-					cycleMap.put(key, summary);
-				}
-
-				PaymentSummary summary = cycleMap.get(key);
-
-				summary.setTotalMilk(summary.getTotalMilk() + rs.getDouble("quantity"));
-
-				summary.setTotalAmount(summary.getTotalAmount() + rs.getDouble("amount"));
 			}
 		}
 
@@ -168,39 +146,38 @@ public class PaymentDaoImpl implements IPaymentDao {
 
 	@Override
 	public List<PaymentSummary> getCycleEntries(String farmerCode, LocalDate cycleStart, LocalDate cycleEnd) throws SQLException {
-	    List<PaymentSummary> list = new ArrayList<>();
-	    pst4.setString(1, farmerCode);
-	    pst4.setDate(2, java.sql.Date.valueOf(cycleStart));
-	    pst4.setDate(3, java.sql.Date.valueOf(cycleEnd));
-	    try (ResultSet rs = pst4.executeQuery()) {
-	        while (rs.next()) {
-	            PaymentSummary e = new PaymentSummary();
-	            e.setCollectionDate(rs.getDate("collectionDate").toLocalDate());
-	            e.setShift(rs.getString("shift"));
-	            e.setMilkType(rs.getString("milkType"));
-	            e.setTotalMilk(rs.getDouble("quantity"));
-	            e.setFat(rs.getDouble("fat"));
-	            e.setSnf(rs.getDouble("snf"));
-	            e.setRatePerLtr(rs.getDouble("ratePerLtr"));
-	            e.setTotalAmount(rs.getDouble("amount"));
-	            list.add(e);
-	        }
-	    }
-	    return list;
-	}
-	
-	public void cleanUp() throws SQLException {
-		if (pst1 != null)
-			pst1.close();
-		if (pst2 != null)
-			pst2.close();
-		if (pst3 != null)
-			pst3.close();
-		if(pst4 != null)
-			pst4.close();
 
-		if (cn != null)
-			cn.close();
+		List<PaymentSummary> list = new ArrayList<>();
+
+		try (Connection cn = DBConnection.getConnection();
+			 PreparedStatement pst4 = cn.prepareStatement(SQL_CYCLE_ENTRIES)) {
+
+			pst4.setString(1, farmerCode);
+			pst4.setDate(2, java.sql.Date.valueOf(cycleStart));
+			pst4.setDate(3, java.sql.Date.valueOf(cycleEnd));
+
+			try (ResultSet rs = pst4.executeQuery()) {
+				while (rs.next()) {
+					PaymentSummary e = new PaymentSummary();
+					e.setCollectionDate(rs.getDate("collectionDate").toLocalDate());
+					e.setShift(rs.getString("shift"));
+					e.setMilkType(rs.getString("milkType"));
+					e.setTotalMilk(rs.getDouble("quantity"));
+					e.setFat(rs.getDouble("fat"));
+					e.setSnf(rs.getDouble("snf"));
+					e.setRatePerLtr(rs.getDouble("ratePerLtr"));
+					e.setTotalAmount(rs.getDouble("amount"));
+					list.add(e);
+				}
+			}
+		}
+
+		return list;
+	}
+
+	public void cleanUp() {
+		// No-op now: try-with-resources closes everything immediately
+		// after each method call. Kept so existing servlet calls don't break.
 	}
 
 }

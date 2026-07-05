@@ -80,16 +80,11 @@ public class FarmerCollectionDetailServlet extends HttpServlet
     	{
     	    if(dao != null)
     	    {
-    	        try
-    	        {
     	            ((MilkCollectionReportDaoImpl)dao).cleanUp();
-    	        }
-    	        catch(SQLException e)
-    	        {
-    	            e.printStackTrace();
-    	        }
+    	       
     	    }
     	}
-	}
+	
+    }
 
 }

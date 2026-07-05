@@ -47,6 +47,13 @@
             <version>8.0.33</version>
         </dependency>
 
+	<!-- HikariCP Connection Pool -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>6.3.1</version>
+        </dependency>
+
         <!-- Java Mail -->
         <dependency>
             <groupId>com.sun.mail</groupId>

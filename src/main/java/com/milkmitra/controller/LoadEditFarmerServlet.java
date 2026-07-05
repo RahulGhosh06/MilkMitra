@@ -59,14 +59,7 @@ public class LoadEditFarmerServlet extends HttpServlet
         {
             if(dao != null)
             {
-                try
-                {
-                    ((FarmerDaoImpl) dao).cleanUp();
-                }
-                catch(SQLException e)
-                {
-                    e.printStackTrace();
-                }
+                ((FarmerDaoImpl) dao).cleanUp();
             }
         }
     }

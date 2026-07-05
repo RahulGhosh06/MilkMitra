@@ -53,10 +53,12 @@ public class ReactivateFarmerServlet extends HttpServlet {
             session.setAttribute("errorMsg", e.getMessage());
             response.sendRedirect("FarmerListServlet?view=farmerList");
 
-        } finally {
-            if(dao != null) {
-                try { ((FarmerDaoImpl) dao).cleanUp(); }
-                catch(SQLException e) { e.printStackTrace(); }
+        }
+	 finally
+	 {
+            if(dao != null)
+	    {
+                 ((FarmerDaoImpl) dao).cleanUp(); 
             }
         }
     }

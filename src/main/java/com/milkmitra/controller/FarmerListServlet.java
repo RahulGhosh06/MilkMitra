@@ -68,12 +68,10 @@ public class FarmerListServlet extends HttpServlet {
             
         } finally {
             if(farmerDao != null) {
-                try { ((FarmerDaoImpl) farmerDao).cleanUp(); }
-                catch(SQLException e) { e.printStackTrace(); }
+                ((FarmerDaoImpl) farmerDao).cleanUp();
             }
             if(dashDao != null) {
-                try { ((AdminDashboardDaoImpl) dashDao).cleanUp(); }
-                catch(SQLException e) { e.printStackTrace(); }
+                 ((AdminDashboardDaoImpl) dashDao).cleanUp(); 
             }
         }
     }

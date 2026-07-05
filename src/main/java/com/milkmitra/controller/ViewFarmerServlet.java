@@ -63,12 +63,10 @@ public class ViewFarmerServlet extends HttpServlet {
             
         } finally {
             if(dao != null) {
-                try { ((FarmerDaoImpl) dao).cleanUp(); }
-                catch(SQLException e) { e.printStackTrace(); }
+                 ((FarmerDaoImpl) dao).cleanUp();   
             }
             if(dashDao != null) {
-                try { ((AdminDashboardDaoImpl) dashDao).cleanUp(); }
-                catch(SQLException e) { e.printStackTrace(); }
+                 ((AdminDashboardDaoImpl) dashDao).cleanUp(); 
             }
         }
     }

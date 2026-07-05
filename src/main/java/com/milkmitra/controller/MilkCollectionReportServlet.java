@@ -64,17 +64,12 @@ public class MilkCollectionReportServlet extends HttpServlet {
     	finally
     	{
     	    if(dao != null)
-    	    {
-    	        try
-    	        {
+    	    {   
     	            ((MilkCollectionReportDaoImpl)dao).cleanUp();
-    	        }
-    	        catch(SQLException e)
-    	        {
-    	            e.printStackTrace();
-    	        }
+    	        
     	    }
     	}
-	}
+	
+   }
 
 }

@@ -17,11 +17,13 @@ import com.milkmitra.dao.IFarmerDao;
  * Servlet implementation class DeactivateFarmerServlet
  */
 @WebServlet("/DeactivateFarmerServlet")
-public class DeactivateFarmerServlet extends HttpServlet {
+public class DeactivateFarmerServlet extends HttpServlet
+{
 
     protected void doGet(HttpServletRequest request,
                          HttpServletResponse response)
-                         throws ServletException, IOException {
+                         throws ServletException, IOException
+ {
 
         System.out.println("DeactivateFarmerServlet Called");
         response.setContentType("text/html");
@@ -30,7 +32,8 @@ public class DeactivateFarmerServlet extends HttpServlet {
 
         IFarmerDao dao = null;
 
-        try {
+        try
+	{
             dao = new FarmerDaoImpl();
 
             int status = dao.deactivateFarmer(farmerCode);  // ✅ int
@@ -48,17 +51,22 @@ public class DeactivateFarmerServlet extends HttpServlet {
             	    "FarmerListServlet?view=farmerList"
             	);
 
-        } catch(Exception e) {
+        }
+	catch(Exception e)
+	{
             e.printStackTrace();
             session.setAttribute("errorMsg", e.getMessage());
             response.sendRedirect("FarmerListServlet?view=farmerList");
 
-        } finally {
-            if(dao != null) {
-                try { ((FarmerDaoImpl) dao).cleanUp(); }
-                catch(SQLException e) { e.printStackTrace(); }
-            }
         }
+	 finally
+	 {
+            if(dao != null)
+	    {
+                ((FarmerDaoImpl) dao).cleanUp();
+            }
+         }
+        
     }
 
 }
