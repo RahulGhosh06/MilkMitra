@@ -10,55 +10,45 @@ import com.milkmitra.utils.DBConnection;
 
 public class AdminDashboardDaoImpl implements IAdminDashboardDao
 {
-	private Connection cn;
-	private PreparedStatement pst1, pst2, pst3, pst4;
-	
-	public AdminDashboardDaoImpl() throws ClassNotFoundException, Exception
-	{
-		cn = DBConnection.openConnection();
-		
-		//1.Today's collection summary 
-		String sql1 = "select\r\n"
-				+ "    count(*) todayEntries,\r\n"
-				+ "    sum(quantity) totalLtr,\r\n"
-				+ "    sum(amount) totalValue,\r\n"
-				+ "    avg(fat) avgFat,\r\n"
-				+ "    avg(snf) avgSnf\r\n"
-				+ "from milkcollection\r\n"
-				+ "where collectionDate = curdate()\r\n"
-				+ "and isActive = 1;";
-		pst1 = cn.prepareStatement(sql1);
-		
-		//2.Morning / Evening count
-		String sql2 = "select\r\n"
-				+ "    shift,\r\n"
-				+ "    count(*) entries\r\n"
-				+ "from milkcollection\r\n"
-				+ "where collectionDate = curdate()\r\n"
-				+ "and isActive = 1\r\n"
-				+ "group by shift;";
-		pst2 = cn.prepareStatement(sql2);
-		
-		//3. Cow / Buffalo litres
-		String sql3 = "select\r\n"
-				+ "    milkType,\r\n"
-				+ "    sum(quantity) qty\r\n"
-				+ "from milkcollection\r\n"
-				+ "where collectionDate = curdate()\r\n"
-				+ "and isActive = 1\r\n"
-				+ "group by milkType;";
-		pst3 = cn.prepareStatement(sql3);
-		
-		//4. Farmer overview
-		String sql4 = "select\r\n"
-				+ "    count(*) totalFarmers,\r\n"
-				+ "    sum(case when is_active = 1 then 1 else 0 end) activeFarmers,\r\n"
-				+ "    sum(case when is_active = 0 then 1 else 0 end) inactiveFarmers\r\n"
-				+ "from farmers;";
-		pst4 = cn.prepareStatement(sql4);
-		
-		//Farnmer Details...
-		
+	private static final String SQL_TODAY_SUMMARY =
+			"select\r\n"
+			+ "    count(*) todayEntries,\r\n"
+			+ "    sum(quantity) totalLtr,\r\n"
+			+ "    sum(amount) totalValue,\r\n"
+			+ "    avg(fat) avgFat,\r\n"
+			+ "    avg(snf) avgSnf\r\n"
+			+ "from milkcollection\r\n"
+			+ "where collectionDate = curdate()\r\n"
+			+ "and isActive = 1;";
+
+	private static final String SQL_SHIFT_COUNT =
+			"select\r\n"
+			+ "    shift,\r\n"
+			+ "    count(*) entries\r\n"
+			+ "from milkcollection\r\n"
+			+ "where collectionDate = curdate()\r\n"
+			+ "and isActive = 1\r\n"
+			+ "group by shift;";
+
+	private static final String SQL_MILKTYPE_QTY =
+			"select\r\n"
+			+ "    milkType,\r\n"
+			+ "    sum(quantity) qty\r\n"
+			+ "from milkcollection\r\n"
+			+ "where collectionDate = curdate()\r\n"
+			+ "and isActive = 1\r\n"
+			+ "group by milkType;";
+
+	private static final String SQL_FARMER_OVERVIEW =
+			"select\r\n"
+			+ "    count(*) totalFarmers,\r\n"
+			+ "    sum(case when is_active = 1 then 1 else 0 end) activeFarmers,\r\n"
+			+ "    sum(case when is_active = 0 then 1 else 0 end) inactiveFarmers\r\n"
+			+ "from farmers;";
+
+	public AdminDashboardDaoImpl() {
+		// Nothing held here now — getDashboardData() below borrows a
+		// single connection from the pool for the duration of that call.
 	}
 
 	@Override
@@ -66,111 +56,80 @@ public class AdminDashboardDaoImpl implements IAdminDashboardDao
 	{
 	    Dashboard dashboard = new Dashboard();
 
-	    // Today's Summary
-	    try(ResultSet rs = pst1.executeQuery())
-	    {
-	        if(rs.next())
+	    try (Connection cn = DBConnection.getConnection()) {
+
+	        // Today's Summary
+	        try (PreparedStatement pst1 = cn.prepareStatement(SQL_TODAY_SUMMARY);
+	             ResultSet rs = pst1.executeQuery())
 	        {
-	            dashboard.setTodayEntries(
-	                    rs.getInt("todayEntries"));
-
-	            dashboard.setTodayTotalLtr(
-	                    rs.getDouble("totalLtr"));
-
-	            dashboard.setTodayValue(
-	                    rs.getDouble("totalValue"));
-
-	            dashboard.setAvgFat(
-	                    rs.getDouble("avgFat"));
-
-	            dashboard.setAvgSnf(
-	                    rs.getDouble("avgSnf"));
-	        }
-	    }
-
-	    // Morning / Evening Entries
-	    try(ResultSet rs = pst2.executeQuery())
-	    {
-	        while(rs.next())
-	        {
-	            String shift = rs.getString("shift");
-
-	            if("Morning".equalsIgnoreCase(shift))
+	            if(rs.next())
 	            {
-	                dashboard.setMorningEntries(
-	                        rs.getInt("entries"));
-	            }
-	            else if("Evening".equalsIgnoreCase(shift))
-	            {
-	                dashboard.setEveningEntries(
-	                        rs.getInt("entries"));
+	                dashboard.setTodayEntries(rs.getInt("todayEntries"));
+	                dashboard.setTodayTotalLtr(rs.getDouble("totalLtr"));
+	                dashboard.setTodayValue(rs.getDouble("totalValue"));
+	                dashboard.setAvgFat(rs.getDouble("avgFat"));
+	                dashboard.setAvgSnf(rs.getDouble("avgSnf"));
 	            }
 	        }
-	    }
 
-	    // Cow / Buffalo Milk
-	    try(ResultSet rs = pst3.executeQuery())
-	    {
-	        while(rs.next())
+	        // Morning / Evening Entries
+	        try (PreparedStatement pst2 = cn.prepareStatement(SQL_SHIFT_COUNT);
+	             ResultSet rs = pst2.executeQuery())
 	        {
-	            String milkType =
-	                    rs.getString("milkType");
+	            while(rs.next())
+	            {
+	                String shift = rs.getString("shift");
 
-	            if("c".equalsIgnoreCase(milkType))
-	            {
-	                dashboard.setTodayCowLtr(
-	                        rs.getDouble("qty"));
-	            }
-	            else if("B".equalsIgnoreCase(milkType))
-	            {
-	                dashboard.setTodayBufLtr(
-	                        rs.getDouble("qty"));
+	                if("Morning".equalsIgnoreCase(shift))
+	                {
+	                    dashboard.setMorningEntries(rs.getInt("entries"));
+	                }
+	                else if("Evening".equalsIgnoreCase(shift))
+	                {
+	                    dashboard.setEveningEntries(rs.getInt("entries"));
+	                }
 	            }
 	        }
-	    }
 
-	    // Farmer Overview
-	    try(ResultSet rs = pst4.executeQuery())
-	    {
-	        if(rs.next())
+	        // Cow / Buffalo Milk
+	        try (PreparedStatement pst3 = cn.prepareStatement(SQL_MILKTYPE_QTY);
+	             ResultSet rs = pst3.executeQuery())
 	        {
-	            dashboard.setTotalFarmers(
-	                    rs.getInt("totalFarmers"));
+	            while(rs.next())
+	            {
+	                String milkType = rs.getString("milkType");
 
-	            dashboard.setActiveFarmers(
-	                    rs.getInt("activeFarmers"));
+	                if("c".equalsIgnoreCase(milkType))
+	                {
+	                    dashboard.setTodayCowLtr(rs.getDouble("qty"));
+	                }
+	                else if("B".equalsIgnoreCase(milkType))
+	                {
+	                    dashboard.setTodayBufLtr(rs.getDouble("qty"));
+	                }
+	            }
+	        }
 
-	            dashboard.setInactiveFarmers(
-	                    rs.getInt("inactiveFarmers"));
+	        // Farmer Overview
+	        try (PreparedStatement pst4 = cn.prepareStatement(SQL_FARMER_OVERVIEW);
+	             ResultSet rs = pst4.executeQuery())
+	        {
+	            if(rs.next())
+	            {
+	                dashboard.setTotalFarmers(rs.getInt("totalFarmers"));
+	                dashboard.setActiveFarmers(rs.getInt("activeFarmers"));
+	                dashboard.setInactiveFarmers(rs.getInt("inactiveFarmers"));
+	            }
 	        }
 	    }
 
 	    return dashboard;
-	    
-	    
-	    
 	}
-	
-	public void cleanUp() throws SQLException
-	{
-	    if(pst1 != null)
-	        pst1.close();
 
-	    if(pst2 != null)
-	        pst2.close();
-
-	    if(pst3 != null)
-	        pst3.close();
-
-	    if(pst4 != null)
-	        pst4.close();
-	   
-
-	    if(cn != null)
-	        cn.close();
-
-	    System.out.println(
-	            "Dashboard Dao Cleaned Up!!");
+	public void cleanUp() {
+		// No-op now: the connection above closes itself via try-with-resources
+		// right after getDashboardData() finishes. Kept so existing servlet
+		// calls to dao.cleanUp() don't break.
 	}
 
 }

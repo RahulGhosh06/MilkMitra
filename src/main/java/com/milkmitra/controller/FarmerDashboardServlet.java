@@ -106,33 +106,13 @@ public class FarmerDashboardServlet extends HttpServlet {
         finally {
 
             if(dao != null) {
-
-                try {
-
-                    ((FarmerDashboardDaoImpl)dao)
-                            .cleanUp();
-
-                }
-                catch(SQLException e) {
-
-                    e.printStackTrace();
-
-                }
+                    ((FarmerDashboardDaoImpl)dao).cleanUp();
             }
 
             if(paymentDao != null) {
-
-                try {
-
                     ((PaymentDaoImpl)paymentDao)
                             .cleanUp();
 
-                }
-                catch(SQLException e) {
-
-                    e.printStackTrace();
-
-                }
             }
         }
     }

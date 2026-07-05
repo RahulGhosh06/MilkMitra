@@ -50,12 +50,8 @@ public class FarmerCycleDetailServlet extends HttpServlet {
 			response.sendRedirect("FarmerPaymentHistoryServlet");
 		} finally {
 			if (dao != null) {
-				try {
 					((PaymentDaoImpl) dao).cleanUp();
-				} catch (SQLException e) {
-					e.printStackTrace();
 				}
-			}
 		}
 	}
 }

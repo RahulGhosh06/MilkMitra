@@ -230,26 +230,12 @@ public class MilkCollectionServlet extends HttpServlet {
     	{
     	    if(dao != null)
     	    {
-    	        try
-    	        {
-    	            ((MilkCollectionDaoImpl)dao).cleanUp();
-    	        }
-    	        catch(SQLException e)
-    	        {
-    	            e.printStackTrace();
-    	        }
-    	    }
+    	         ((MilkCollectionDaoImpl)dao).cleanUp();
+     	    }
     	    if(farmerDao != null)
     	    {
-    	        try
-    	        {
-    	            ((FarmerDaoImpl)farmerDao).cleanUp();
-    	        }
-    	        catch(SQLException e)
-    	        {
-    	            e.printStackTrace();
-    	        }
-    	    }
+    	         ((FarmerDaoImpl)farmerDao).cleanUp();   
+      	    }
     	}
     	
     	

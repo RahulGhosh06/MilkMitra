@@ -68,14 +68,7 @@ public class ShiftWiseCollectionServlet extends HttpServlet
         {
             if(dao != null)
             {
-                try
-                {
-                    ((MilkCollectionReportDaoImpl)dao).cleanUp();
-                }
-                catch(SQLException e)
-                {
-                    e.printStackTrace();
-                }
+                    ((MilkCollectionReportDaoImpl)dao).cleanUp();   
             }
         }
     }
