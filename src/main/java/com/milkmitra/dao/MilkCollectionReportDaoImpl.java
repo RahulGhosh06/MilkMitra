@@ -17,12 +17,12 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 {
 	private static final String SQL_TODAY =
 			"select * from milkcollection " +
-			"where collectionDate = curdate() " +
+			"where collectionDate = ? " +
 			"and isActive = 1 " +
 			"order by shift, farmerCode";
 
 	private static final String SQL_BY_SHIFT =
-			"select * from milkcollection where collectionDate = curdate() and shift = ? and isActive = 1 order by farmerCode";
+			"select * from milkcollection where collectionDate = ? and shift = ? and isActive = 1 order by farmerCode";
 
 	private static final String SQL_DATEWISE =
 			"select mc.farmerCode,\r\n"
@@ -44,29 +44,40 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 		// connection from the pool for just the duration of that call.
 	}
 
+	// Use the app's IST calendar date, NOT the DB server's own clock.
+	// curdate() relies on the MySQL server's timezone (UTC on Railway),
+	// which caused "today" to look wrong for ~5.5 hours around midnight IST.
+	private static Date todayIst() {
+		return Date.valueOf(LocalDate.now(java.time.ZoneId.of("Asia/Kolkata")));
+	}
+
 	@Override
 	public List<Collection> getTodayCollections() throws SQLException {
 		List<Collection> collections = new ArrayList<>();
 
 		try (Connection cn = DBConnection.getConnection();
-			 PreparedStatement pst1 = cn.prepareStatement(SQL_TODAY);
-			 ResultSet rs = pst1.executeQuery())
-		{
-			while(rs.next())
+			 PreparedStatement pst1 = cn.prepareStatement(SQL_TODAY)) {
+
+			pst1.setDate(1, todayIst());
+
+			try (ResultSet rs = pst1.executeQuery())
 			{
-				Collection c = new Collection();
-				c.setCollectionId(rs.getInt("collectionId"));
-				c.setFarmerCode(rs.getString("farmerCode"));
-				c.setCollectionDate(rs.getDate("collectionDate").toLocalDate());
-				c.setShift(rs.getString("shift"));
-				c.setMilkType(rs.getString("milkType"));
-				c.setQuantity(rs.getDouble("quantity"));
-				c.setFat(rs.getDouble("fat"));
-				c.setSnf(rs.getDouble("snf"));
-				c.setRatePerLtr(rs.getDouble("ratePerLtr"));
-				c.setAmount(rs.getDouble("amount"));
-				c.setCreatedAt(rs.getTimestamp("createdAt"));
-				collections.add(c);
+				while(rs.next())
+				{
+					Collection c = new Collection();
+					c.setCollectionId(rs.getInt("collectionId"));
+					c.setFarmerCode(rs.getString("farmerCode"));
+					c.setCollectionDate(rs.getDate("collectionDate").toLocalDate());
+					c.setShift(rs.getString("shift"));
+					c.setMilkType(rs.getString("milkType"));
+					c.setQuantity(rs.getDouble("quantity"));
+					c.setFat(rs.getDouble("fat"));
+					c.setSnf(rs.getDouble("snf"));
+					c.setRatePerLtr(rs.getDouble("ratePerLtr"));
+					c.setAmount(rs.getDouble("amount"));
+					c.setCreatedAt(rs.getTimestamp("createdAt"));
+					collections.add(c);
+				}
 			}
 		}
 
@@ -80,7 +91,8 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 		try (Connection cn = DBConnection.getConnection();
 			 PreparedStatement pst2 = cn.prepareStatement(SQL_BY_SHIFT)) {
 
-			pst2.setString(1, shift);
+			pst2.setDate(1, todayIst());
+			pst2.setString(2, shift);
 
 			try (ResultSet rs = pst2.executeQuery())
 			{
@@ -181,8 +193,8 @@ public class MilkCollectionReportDaoImpl implements IMilkCollectionReportDao
 	}
 
 	public void cleanUp() {
-		// No-op now: try-with-resources closes everything immediately
-		// after each method call. Kept so existing servlet calls don't break.
+		// No-op: try-with-resources closes everything immediately after
+		// each method call.
 	}
 
 }

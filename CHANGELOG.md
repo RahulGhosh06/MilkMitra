@@ -1,3 +1,23 @@
+\## 2026-07-06 (3)
+
+\- Fixed critical bug: "today's" data queries used SQL curdate(), which
+
+&#x20; reads the DB server's own clock (UTC on Railway) instead of the actual
+
+&#x20; IST date. This caused newly-saved entries to be invisible in reports/
+
+&#x20; dashboard for \~5.5 hours around midnight IST, even though they were
+
+&#x20; saved correctly (confirmed by duplicate-entry check firing correctly)
+
+\- Fixed in AdminDashboardDaoImpl (3 queries) and MilkCollectionReportDaoImpl
+
+&#x20; (2 queries) — now pass an explicit Asia/Kolkata date as a bind parameter
+
+&#x20; instead of relying on curdate()
+
+
+
 \## 2026-07-06 (2)
 
 \- Fixed timezone bug: date/time displays used server default timezone
