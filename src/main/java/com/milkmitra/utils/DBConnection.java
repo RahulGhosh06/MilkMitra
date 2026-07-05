@@ -13,15 +13,15 @@ public class DBConnection {
 
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            // Read from environment variables
             String dbUrl  = System.getenv("DB_URL");
             String dbUser = System.getenv("DB_USER");
             String dbPass = System.getenv("DB_PASSWORD");
 
-            // Fallback to localhost for local development
-            if (dbUrl  == null) dbUrl  = "jdbc:mysql://localhost:3306/milkmitra?useSSL=false&allowPublicKeyRetrieval=true";
-            if (dbUser == null) dbUser = "rahulghosh";
-            if (dbPass == null) dbPass = "20040106@Rg";
+            if (dbUrl == null || dbUser == null || dbPass == null) {
+                throw new IllegalStateException(
+                    "Missing DB_URL, DB_USER, or DB_PASSWORD environment variable. " +
+                    "Set these before starting the app.");
+            }
 
             cn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
 
