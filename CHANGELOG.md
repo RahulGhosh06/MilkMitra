@@ -1,3 +1,29 @@
+\## 2026-07-10
+
+\- Fixed farmer dashboard showing stale/zeroed data after navigating from
+
+&#x20; Payment History back to Dashboard/Home
+
+\- Root cause: Dashboard and Home nav links only did a client-side JS
+
+&#x20; toggle (navTo()) instead of a real request, so they reused whatever
+
+&#x20; HTML was already rendered by the last real page load (e.g. Payment
+
+&#x20; History, which never populates the `dashboard` attribute) — every
+
+&#x20; dashboard field silently fell back to its zero/null default
+
+\- Fix: Dashboard (drawer) and Home (bottom nav) now navigate to
+
+&#x20; FarmerDashboardServlet directly, same pattern already used by Payment,
+
+&#x20; guaranteeing fresh data on every click regardless of which screen
+
+&#x20; was previously shown
+
+
+
 \## 2026-07-06 (3)
 
 \- Fixed critical bug: "today's" data queries used SQL curdate(), which
@@ -71,9 +97,8 @@
 
 
 
+
 ## 2026-07-05
 
 \- Added missing FK constraint: users.farmer\_code -> farmers.farmer\_code
-
-
 
