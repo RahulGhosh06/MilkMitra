@@ -1239,7 +1239,7 @@ to {
 			<nav class="dr-nav">
 				<div class="dn-lbl">Main Menu</div>
 				<div class="dr-item <%=isPaymentView ? "" : "active"%>"
-					onclick="navTo('dashboard',this,'Dashboard');closeDrawer()">
+					onclick="window.location.href='FarmerDashboardServlet'">
 					<i class="ti ti-home"></i>Dashboard
 				</div>
 				<div class="dr-item <%=isPaymentView ? "active" : ""%>"
@@ -1562,8 +1562,8 @@ to {
 						<i class="ti ti-rocket" aria-hidden="true"></i>
 						<h2>Features Under Development</h2>
 						<p>
-							Actively building these features.<br>They will
-							be available in an upcoming release.
+							Actively building these features.<br>They will be available
+							in an upcoming release.
 						</p>
 					</div>
 					<div class="cf-item">
@@ -1594,8 +1594,7 @@ to {
 						</div>
 						<div class="cf-text">
 							<h4>Milk Price Checker</h4>
-							<p>Compare rates of different dairy companies by
-								FAT/SNF.</p>
+							<p>Compare rates of different dairy companies by FAT/SNF.</p>
 						</div>
 						<span class="cf-badge">In Progress</span>
 					</div>
@@ -1879,7 +1878,8 @@ to {
 		<!-- BOTTOM NAV -->
 		<div class="bottom-nav">
 			<button class="nav-btn <%=isPaymentView ? "" : "active"%>"
-				id="nav-dashboard" onclick="navTo('dashboard',null,'Dashboard')">
+				id="nav-dashboard"
+				onclick="window.location.href='FarmerDashboardServlet'">
 				<i class="ti ti-home" aria-hidden="true"></i>Home
 			</button>
 			<button class="nav-btn <%=isPaymentView ? "active" : ""%>"
