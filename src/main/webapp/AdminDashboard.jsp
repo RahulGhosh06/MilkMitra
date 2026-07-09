@@ -96,7 +96,8 @@ else if ("reports".equals(currentView))
 	pageTitle = "Reports";
 else if ("priceConfig".equals(currentView))
 	pageTitle = "Price Config";
-
+else if ("milkCollection".equals(currentView))
+	pageTitle = "Milk Collection";
 PaymentSummary cycleSummary = (PaymentSummary) request.getAttribute("cycleSummary");
 %>
 <!DOCTYPE html>
@@ -2294,6 +2295,115 @@ td {
 .wip-back i {
 	font-size: 16px;
 }
+
+/* ═══════════════════════════════════════════════════════════
+   MILK COLLECTION VIEW
+═══════════════════════════════════════════════════════════ */
+.mc-fields {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+.mc-field {
+	padding: 14px 20px;
+	border-right: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+}
+.mc-field:nth-child(2n) {
+	border-right: none;
+}
+.mc-field.full {
+	grid-column: 1/-1;
+	border-right: none;
+}
+.mc-field label {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--muted);
+	text-transform: uppercase;
+	letter-spacing: .4px;
+	margin-bottom: 7px;
+}
+.mc-field label i {
+	font-size: 14px;
+}
+.mc-field input[type=text], .mc-field input[type=number] {
+	width: 100%;
+	background: transparent;
+	border: none;
+	outline: none;
+	font-size: 15px;
+	font-weight: 600;
+	color: var(--navy);
+	padding: 0;
+	font-family: 'DM Sans', sans-serif;
+}
+.mc-field input::placeholder {
+	color: #c4cdd8;
+	font-weight: 400;
+}
+.mc-field input[type=number] {
+	-moz-appearance: textfield;
+}
+.mc-field input[type=number]::-webkit-inner-spin-button,
+.mc-field input[type=number]::-webkit-outer-spin-button {
+	-webkit-appearance: none;
+}
+.mc-computed-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 13px 20px;
+	border-bottom: 1px solid var(--border);
+}
+.mc-computed-row:last-child {
+	border-bottom: none;
+}
+.mc-cr-label {
+	font-size: 13px;
+	color: var(--muted);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+.mc-cr-label i {
+	font-size: 16px;
+}
+.mc-cr-val {
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--navy);
+}
+.mc-badge {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 4px 11px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 600;
+}
+.mc-badge-morning {
+	background: var(--blue-lt);
+	color: var(--blue);
+}
+.mc-badge-evening {
+	background: var(--purple-lt);
+	color: var(--purple);
+}
+.mc-badge-cow {
+	background: var(--green-lt);
+	color: var(--green);
+}
+.mc-badge-buffalo {
+	background: var(--amber-lt);
+	color: var(--amber);
+}
+.mc-badge i {
+	font-size: 13px;
+}
 </style>
 </head>
 <body>
@@ -2336,8 +2446,10 @@ td {
 				View Farmers</div>
 
 			<div class="nl">Operations</div>
-			<a href="milkcollection.jsp" class="ni"><i class="ti ti-droplet"></i>Milk
-				Collection</a> <a href="milkcollectionReportServlet?view=today"
+			<a href="AdminDashboardServlet?view=milkCollection"
+				class="ni <%="milkCollection".equals(currentView) ? "active" : ""%>">
+				<i class="ti ti-droplet"></i>Milk Collection
+			</a> <a href="milkcollectionReportServlet?view=today"
 				class="ni"><i class="ti ti-droplet-filled-2"></i>Collection
 				Report</a> <a href="AdminDashboardServlet?view=payments"
 				class="ni <%="payments".equals(currentView) ? "active" : ""%>"><i
@@ -2398,6 +2510,9 @@ td {
 					<%
 					} else if ("priceConfig".equals(currentView)) {
 					%>Configure milk rate formulas
+					<%
+					} else if ("milkCollection".equals(currentView)) {
+					%>Record morning &amp; evening milk collection
 					<%
 					}
 					%>
@@ -2662,7 +2777,7 @@ td {
 					<div class="mc-title">Add Farmer</div>
 					<div class="mc-sub">Register new farmer</div>
 					<div class="mc-arrow">Open →</div>
-				</a> <a href="milkcollection.jsp" class="mod-card"
+				</a> <a href="AdminDashboardServlet?view=milkCollection" class="mod-card"
 					style="--cc: #0d9488;">
 					<div class="mc-icon teal">
 						<i class="ti ti-droplet"></i>
@@ -3577,6 +3692,108 @@ td {
 				</div>
 			</div>
 
+			<!-- ══════════════════════════════════════════════════
+             VIEW: milkCollection
+        ══════════════════════════════════════════════════ -->
+			<%
+			} else if ("milkCollection".equals(currentView)) {
+			%>
+
+			<div class="bc">
+				<a href="AdminDashboardServlet?view=dashboard">Dashboard</a> <i
+					class="ti ti-chevron-right"></i> <span>Operations</span> <i
+					class="ti ti-chevron-right"></i> <span>Milk Collection</span>
+			</div>
+
+			<div class="form-card" style="max-width: 640px;">
+				<div class="form-card-header">
+					<div class="hicon">
+						<i class="ti ti-droplet"></i>
+					</div>
+					<div>
+						<h3>Milk Collection Entry</h3>
+						<p id="mcShiftSubtitle">Loading...</p>
+					</div>
+				</div>
+
+				<form action="milkcollectionServlet" method="post">
+
+					<!-- Farmer details -->
+					<div class="ef-sec-lbl">
+						<i class="ti ti-id"></i>Farmer details
+					</div>
+					<div class="mc-fields">
+						<div class="mc-field full">
+							<label><i class="ti ti-id"></i>Farmer code</label> <input
+								type="text" id="mcFarmerCode" name="farmerCode"
+								placeholder="Enter Farmer No (1-99)"
+								oninput="mcLoadFarmerName()" required>
+						</div>
+						<div class="mc-field full" id="mcFarmerNameRow"
+							style="display: none;">
+							<label><i class="ti ti-user"></i>Farmer Name</label> <input
+								type="text" id="mcFarmerName" readonly>
+						</div>
+					</div>
+
+					<!-- Milk readings -->
+					<div class="ef-sec-lbl">
+						<i class="ti ti-droplet-half"></i>Milk readings
+					</div>
+					<div class="mc-fields">
+						<div class="mc-field">
+							<label><i class="ti ti-droplet-half"></i>Quantity (litres)</label>
+							<input type="number" step="0.01" id="mcQuantity" name="quantity"
+								placeholder="0.00" oninput="mcRecalc()" required>
+						</div>
+						<div class="mc-field">
+							<label><i class="ti ti-percentage"></i>FAT (%)</label> <input
+								type="number" step="0.01" id="mcFat" name="fat"
+								placeholder="0.00" oninput="mcRecalc()" required>
+						</div>
+						<div class="mc-field">
+							<label><i class="ti ti-percentage"></i>SNF (%)</label> <input
+								type="number" step="0.01" name="snf" placeholder="0.00"
+								required>
+						</div>
+						<div class="mc-field">
+							<label><i class="ti ti-coin-rupee"></i>Amount (&#8377;)</label>
+							<input type="number" step="0.01" id="mcAmount" name="amount"
+								placeholder="0.00" oninput="mcRecalc()" required>
+						</div>
+					</div>
+
+					<!-- Computed values -->
+					<div class="ef-sec-lbl">
+						<i class="ti ti-calculator"></i>Computed values
+					</div>
+
+					<div class="mc-computed-row">
+						<span class="mc-cr-label"><i class="ti ti-sun"></i>Shift</span> <span
+							class="mc-badge mc-badge-morning" id="mcShiftBadge"><i
+							class="ti ti-sun"></i>Morning</span> <input type="hidden"
+							id="mcShift" name="shift">
+					</div>
+					<div class="mc-computed-row">
+						<span class="mc-cr-label"><i class="ti ti-cow"></i>Milk type</span>
+						<span class="mc-badge mc-badge-cow" id="mcMilkTypeBadge"><i
+							class="ti ti-droplet"></i>Cow (C)</span> <input type="hidden"
+							id="mcMilkType" name="milkType">
+					</div>
+					<div class="mc-computed-row">
+						<span class="mc-cr-label"><i class="ti ti-receipt"></i>Rate
+							per litre</span> <span class="mc-cr-val" id="mcRateDisplay">—</span>
+						<input type="hidden" id="mcRatePerLtr" name="ratePerLtr">
+					</div>
+
+					<div class="form-footer" style="justify-content: flex-end;">
+						<button type="submit" class="btn btn-primary">
+							<i class="ti ti-device-floppy"></i>Save collection
+						</button>
+					</div>
+				</form>
+			</div>
+
 			<%
 			} /* end view switch */
 			%>
@@ -3730,6 +3947,67 @@ if(greetEl){
 							m.classList.remove('show');
 						});
 		});
+
+		/* ── Milk Collection view ── */
+		function mcLoadFarmerName() {
+			var code = document.getElementById("mcFarmerCode").value.trim();
+			if (code === "") {
+				document.getElementById("mcFarmerNameRow").style.display = "none";
+				return;
+			}
+			var farmerCode = "F" + code.padStart(3, '0');
+			fetch("FarmerLookUpServlet?farmerCode=" + farmerCode)
+				.then(function(response) { return response.text(); })
+				.then(function(data) {
+					if (data.trim() !== "") {
+						document.getElementById("mcFarmerName").value = data;
+						document.getElementById("mcFarmerNameRow").style.display = "block";
+					} else {
+						document.getElementById("mcFarmerNameRow").style.display = "none";
+					}
+				});
+		}
+		function mcRecalc() {
+			var fat = parseFloat(document.getElementById("mcFat").value) || 0;
+			var qty = parseFloat(document.getElementById("mcQuantity").value) || 0;
+			var amt = parseFloat(document.getElementById("mcAmount").value) || 0;
+
+			var milkType = fat >= 6 ? "B" : "C";
+			document.getElementById("mcMilkType").value = milkType;
+			var mtBadge = document.getElementById("mcMilkTypeBadge");
+			if (milkType === "B") {
+				mtBadge.innerHTML = '<i class="ti ti-droplet-filled"></i>Buffalo (B)';
+				mtBadge.className = "mc-badge mc-badge-buffalo";
+			} else {
+				mtBadge.innerHTML = '<i class="ti ti-droplet"></i>Cow (C)';
+				mtBadge.className = "mc-badge mc-badge-cow";
+			}
+
+			var rate = qty > 0 ? (amt / qty) : 0;
+			document.getElementById("mcRatePerLtr").value = rate.toFixed(2);
+			document.getElementById("mcRateDisplay").textContent = qty > 0 ? "\u20B9" + rate.toFixed(2) : "\u2014";
+
+			var h = new Date().getHours();
+			var shift = h < 12 ? "MORNING" : "EVENING";
+			document.getElementById("mcShift").value = shift;
+			var sBadge = document.getElementById("mcShiftBadge");
+			if (shift === "MORNING") {
+				sBadge.innerHTML = '<i class="ti ti-sun"></i>Morning';
+				sBadge.className = "mc-badge mc-badge-morning";
+			} else {
+				sBadge.innerHTML = '<i class="ti ti-moon"></i>Evening';
+				sBadge.className = "mc-badge mc-badge-evening";
+			}
+
+			var dateStr = new Date().toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" });
+			var sub = document.getElementById("mcShiftSubtitle");
+			if (sub) {
+				sub.textContent = (h < 12 ? "Morning" : "Evening") + " shift \u00B7 " + dateStr;
+			}
+		}
+		if (document.getElementById("mcQuantity")) {
+			mcRecalc();
+		}
 	</script>
 </body>
 </html>

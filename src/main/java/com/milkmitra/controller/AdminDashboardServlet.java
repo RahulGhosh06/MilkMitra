@@ -119,7 +119,8 @@ public class AdminDashboardServlet extends HttpServlet {
             // feedStore, reports, priceConfig all just render the JSP
             case "feedStore":
             case "reports":
-            case "priceConfig": {
+            case "priceConfig":
+            case "milkCollection": {
                 try {
                     request.getRequestDispatcher("AdminDashboard.jsp").forward(request, response);
                 } catch (Exception e) {

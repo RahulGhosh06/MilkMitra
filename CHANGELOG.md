@@ -1,3 +1,35 @@
+\## 2026-07-10 (2)
+
+\- Integrated Milk Collection into the unified admin dashboard shell
+
+&#x20; instead of a standalone page
+
+\- Root cause: milkcollection.jsp was a fully separate page with no
+
+&#x20; sidebar/topbar, breaking the consistent nav shell every other admin
+
+&#x20; screen (addFarmer, farmerList, payments, etc.) already used
+
+\- Fix: added a `milkCollection` case to AdminDashboardServlet's view
+
+&#x20; switch, added the matching view block + CSS + JS (farmer lookup,
+
+&#x20; live shift/milk-type/rate calculator) to AdminDashboard.jsp
+
+\- Also fixed MilkCollectionServlet, which had 10 hardcoded redirects
+
+&#x20; back to the old standalone milkcollection.jsp (on both the success
+
+&#x20; path and every validation error) — these now redirect to
+
+&#x20; AdminDashboardServlet?view=milkCollection so saving a collection
+
+&#x20; keeps the admin inside the dashboard shell instead of kicking them
+
+&#x20; back out to the old page
+
+
+
 \## 2026-07-10
 
 \- Fixed farmer dashboard showing stale/zeroed data after navigating from
