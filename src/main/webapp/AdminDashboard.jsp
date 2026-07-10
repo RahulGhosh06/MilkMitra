@@ -3699,9 +3699,9 @@ td {
 			} else if ("milkCollection".equals(currentView)) {
 			%>
 
+			<!-- Breadcrumb -->
 			<div class="bc">
 				<a href="AdminDashboardServlet?view=dashboard">Dashboard</a> <i
-					class="ti ti-chevron-right"></i> <span>Operations</span> <i
 					class="ti ti-chevron-right"></i> <span>Milk Collection</span>
 			</div>
 
@@ -3855,13 +3855,11 @@ var d = new Date();
 document.getElementById('dateStr').textContent =
     d.toLocaleDateString('en-IN',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
 var greetEl = document.getElementById('greeting');
-if(greetEl){
-    var h=d.getHours();
-    var g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
-    greetEl.textContent = g + ', <%=username%>
-		\uD83D\uDC4B';
-		}
-
+if (greetEl) {
+    var h = d.getHours();
+    var g = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    greetEl.textContent = g + ', <%=username%> \uD83D\uDC4B';
+}
 		/* ── IFSC uppercase (Add Farmer view) ── */
 		var ifscInput = document.getElementById('ifscInput');
 		if (ifscInput) {

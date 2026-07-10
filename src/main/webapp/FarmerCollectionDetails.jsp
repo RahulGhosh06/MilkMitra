@@ -330,7 +330,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text-primar
         <a href="milkcollectionReport.jsp?view=monthly" class="sn-item"><i class="ti ti-calendar-stats"></i>Monthly Report</a>
         <div class="sn-divider"></div>
         <div class="sn-label">Navigation</div>
-        <a href="milkcollection.jsp" class="sn-item"><i class="ti ti-plus"></i>New Entry</a>
+        <a href="AdminDashboardServlet?view=milkCollection" class="sn-item"><i class="ti ti-plus"></i>New Entry</a>
         <a href="AdminDashboard.jsp" class="sn-item"><i class="ti ti-home"></i>Dashboard</a>
     </nav>
     <div class="sn-foot">

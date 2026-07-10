@@ -1,3 +1,14 @@
+
+\## 2026-07-10 (3)
+- Fixed a JavaScript syntax error in the embedded Milk Collection view
+  caused by an unescaped line break inside a string literal, which was
+  silently breaking the entire script block (farmer lookup, live
+  badge/rate calculation, greeting, and shift subtitle all failed as
+  a result).
+- Added specific handling for duplicate collection entries
+  (SQLIntegrityConstraintViolationException) with a user-friendly
+  error message instead of a raw HTTP 500.
+
 \## 2026-07-10 (2)
 
 \- Integrated Milk Collection into the unified admin dashboard shell
