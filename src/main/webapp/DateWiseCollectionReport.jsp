@@ -216,7 +216,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
         <a href="milkcollectionReport.jsp?view=monthly" class="sn-item"><i class="ti ti-calendar-stats"></i>Monthly Report</a>
         <div class="sn-divider"></div>
         <div class="sn-label">Navigation</div>
-        <a href="milkcollection.jsp" class="sn-item"><i class="ti ti-plus"></i>New Entry</a>
+        <a href="AdminDashboardServlet?view=milkCollection" class="sn-item"><i class="ti ti-plus"></i>New Entry</a>
         <a href="AdminDashboard.jsp" class="sn-item"><i class="ti ti-home"></i>Dashboard</a>
     </nav>
     <div class="sn-foot">
@@ -253,7 +253,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
             <% if(!reports.isEmpty()) { %>
             <button class="tb-icon" onclick="window.print()" title="Print"><i class="ti ti-printer"></i></button>
             <% } %>
-            <a href="milkcollection.jsp" class="tb-btn"><i class="ti ti-plus"></i>New Entry</a>
+            <a href="AdminDashboardServlet?view=milkCollection" class="tb-btn"><i class="ti ti-plus"></i>New Entry</a>
         </div>
     </div>
 

@@ -782,7 +782,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
         </a>
         <div class="sn-divider"></div>
         <div class="sn-label">Navigation</div>
-        <a href="milkcollection.jsp" class="sn-item">
+        <a href="AdminDashboardServlet?view=milkCollection" class="sn-item">
             <i class="ti ti-plus"></i>New Entry
         </a>
         <a href="AdminDashboardServlet" class="sn-item">
@@ -853,7 +853,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
 			</a>
             <button class="tb-icon" onclick="window.print()" title="Print"><i class="ti ti-printer"></i></button>
             <% } %>
-            <a href="milkcollection.jsp" class="tb-btn"><i class="ti ti-plus"></i>New Entry</a>
+            <a href="AdminDashboardServlet?view=milkCollection" class="tb-btn"><i class="ti ti-plus"></i>New Entry</a>
         </div>
     </div>
 
@@ -986,7 +986,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
                         <i class="ti ti-droplet-off"></i>
                         <div class="etitle">No collections yet</div>
                         <p>No milk has been recorded today.</p>
-                        <a href="milkcollection.jsp"><i class="ti ti-plus"></i>Add Entry</a>
+                        <a href="AdminDashboardServlet?view=milkCollection"><i class="ti ti-plus"></i>Add Entry</a>
                     </div>
                     <% } else { %>
                     <table>
@@ -1118,7 +1118,7 @@ tbody td{padding:10px 14px;vertical-align:middle;white-space:nowrap;}
                     <i class="ti ti-droplet-off"></i>
                     <div class="etitle">No records found</div>
                     <p>No <%= isMorning?"morning":"evening" %> collections recorded yet.</p>
-                    <a href="milkcollection.jsp"><i class="ti ti-plus"></i>Add Entry</a>
+                    <a href="AdminDashboardServlet?view=milkCollection"><i class="ti ti-plus"></i>Add Entry</a>
                 </div>
                 <% } else { %>
                 <table>
